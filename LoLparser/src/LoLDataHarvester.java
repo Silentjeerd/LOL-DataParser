@@ -18,15 +18,15 @@ public class LoLDataHarvester {
 
         //outputFilePath  = Paths.get("").toRealPath().getParent().toString();
         outputFilePath = Paths.get("").toRealPath().toString();
-        getMatchHistoryByAccountID();
-        //challengerData();
 
+        challengerData();
+        System.out.println("Challenger data is opgehaald.");
         //matchidtest();
         //championTest();
-        //leaderboardTest();
-
-        //appendBracketsWithIDs();
-
+        leaderboardTest();
+        System.out.println("Page 1 van alle brackets is opgehaald.");
+        appendBracketsWithIDs();
+        System.out.println("De accountID's zijn toegevoegd.");
     }
 
     public static void championTest()throws IOException{
@@ -39,8 +39,7 @@ public class LoLDataHarvester {
     }
 
     public static void getMatchHistoryByAccountID() throws IOException{
-        MatchHistory matchHistory = new MatchHistory(outputFilePath ,divisions,tiers,api_key,region);
-        matchHistory.getData();
+
     }
 
     public static void matchidtest() throws IOException {
