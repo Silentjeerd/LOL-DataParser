@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class LoLDataHarvester {
 
-    private static String api_key = "";
+    private static String api_key = "RGAPI-715c77e4-6585-4e5c-b4aa-ee8951fa177e";
     private static String region = "euw1";
     private static String outputFilePath;
     private static String[] tiers = {"DIAMOND","PLATINUM","GOLD","SILVER","BRONZE","IRON"};
@@ -16,12 +16,17 @@ public class LoLDataHarvester {
 
     public static void main(String[] args) throws IOException {
 
-        outputFilePath  = Paths.get("").toRealPath().getParent().toString() + "/CSVs/";
-        challengerData(region,api_key);
+        //outputFilePath  = Paths.get("").toRealPath().getParent().toString();
+        outputFilePath = Paths.get("").toRealPath().toString();
+        getMatchHistoryByAccountID();
+        //challengerData();
+
         //matchidtest();
         //championTest();
         //leaderboardTest();
+
         //appendBracketsWithIDs();
+
     }
 
     public static void championTest()throws IOException{
@@ -30,7 +35,12 @@ public class LoLDataHarvester {
     }
 
     public static void leaderboardTest()  throws IOException {
-        leagueV4EntriesQueTierDivision test = new leagueV4EntriesQueTierDivision(outputFilePath,divisions,tiers,api_key,region);
+        leagueV4EntriesQueTierDivision test = new leagueV4EntriesQueTierDivision(outputFilePath + "/LoLparser/CSVs/PlayersPerBracket/",divisions,tiers,api_key,region);
+    }
+
+    public static void getMatchHistoryByAccountID() throws IOException{
+        MatchHistory matchHistory = new MatchHistory(outputFilePath ,divisions,tiers,api_key,region);
+        matchHistory.getData();
     }
 
     public static void matchidtest() throws IOException {
@@ -39,13 +49,13 @@ public class LoLDataHarvester {
         test.getData(region,id,api_key);
     }
 
-    public static void challengerData(String region,String api_key) throws  IOException{
-        challengerSoloQue5x5 output = new challengerSoloQue5x5(outputFilePath);
+    public static void challengerData() throws  IOException{
+        challengerSoloQue5x5 output = new challengerSoloQue5x5(outputFilePath + "/LoLparser/CSVs/PlayersPerBracket/");
         output.getData(region,api_key);
     }
 
     public static void appendBracketsWithIDs() throws IOException{
-        appendCSVs test = new appendCSVs(outputFilePath,divisions,tiers,api_key,region);
+        appendCSVs test = new appendCSVs(outputFilePath + "/LoLparser/CSVs/PlayersPerBracket/",divisions,tiers,api_key,region);
         test.getAllAccountIDsTierDivision();
     }
 }

@@ -12,7 +12,7 @@ public class challengerSoloQue5x5 {
 
     public void getData(String region, String apiKey) throws IOException {
         String outputFile = outPutFilePath + "ChallengerSoloQue.csv";
-        String urlWhole = "https://" + region + ".api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5?api_key=" +apiKey;
+        String urlWhole = "https://" + region + ".api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5?api_key=" + apiKey;
         parser.generateCSV(urlWhole,outputFile);
     }
 }

@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 
 import com.github.opendevl.JFlat;
 import net.minidev.json.parser.JSONParser;
+import org.apache.commons.io.IOUtils;
 import org.json.*;
 
 import org.apache.commons.io.FileUtils;
@@ -56,6 +57,31 @@ public class parser {
         } finally  {
             is.close();
         }
+    }
+
+    static public String returnJsonStringFromUrl(String url) throws IOException, JSONException{
+        InputStream is = new URL(url).openStream();
+
+        try {
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            //return jsonText;
+            JSONObject json = new JSONObject(jsonText);
+            JSONArray subArray = json.getJSONArray("matches");
+            String wantedString = subArray.toString();
+            return wantedString;
+
+        } finally  {
+            is.close();
+        }
+    }
+
+    static public void generateCSVFromJString(String inputString, String outputFile) throws IOException{
+
+        JFlat flatMe = new JFlat(inputString);
+        List<Object[]> json2csv = flatMe.json2Sheet().getJsonAsSheet();
+        flatMe.write2csv(outputFile);
     }
 
     static public void generateCSV(String url,String outputFile) throws IOException{
