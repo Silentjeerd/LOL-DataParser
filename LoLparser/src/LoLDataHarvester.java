@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class LoLDataHarvester {
 
-    private static String api_key = "RGAPI-715c77e4-6585-4e5c-b4aa-ee8951fa177e";
+    private static String api_key = "";
     private static String region = "euw1";
     private static String outputFilePath;
     private static String[] tiers = {"DIAMOND","PLATINUM","GOLD","SILVER","BRONZE","IRON"};
