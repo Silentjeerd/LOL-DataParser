@@ -4,15 +4,23 @@ import java.nio.file.Paths;
 
 public class champions {
 
-    private String outPutFilePath;
+    public champions() throws IOException {
 
-    public champions(String outputfilepath) throws IOException {
-        outPutFilePath  = outputfilepath;
     }
 
     public void getData() throws IOException {
-        String outputFile = outPutFilePath + "Champions.csv";
-        String urlWhole = "http://ddragon.leagueoflegends.com/cdn/10.4.1/data/en_US/champion.json";
-        parser.generateCSV(urlWhole,outputFile);
+        String outputFile = "LoLparser/CSVs/Champions.csv";
+        String urlWhole = "http://ddragon.leagueoflegends.com/cdn/10.6.1/data/en_US/champion.json";
+        String championData = parser.returnJsonStringFromUrl(urlWhole,"");
+        System.out.println(championData);
+
+        String replaceString = '"' + "type" +'"';
+        String replace = '"' + "data" + '"';
+        String with = '"' + "champions";
+        championData = championData.substring(74,championData.length()-1);
+        System.out.println(championData);
+        championData = "{" + '"' + "champions" + '"' + ":[" + championData + "]}";
+        System.out.println(championData);
+        parser.generateCSVFromJString(championData,outputFile);
     }
 }

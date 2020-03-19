@@ -10,51 +10,51 @@ public class LoLDataHarvester {
 
     private static String api_key = "";
     private static String region = "euw1";
-    private static String outputFilePath;
     private static String[] tiers = {"DIAMOND","PLATINUM","GOLD","SILVER","BRONZE","IRON"};
     private static String[] divisions = {"I","II","III","IV"};
 
     public static void main(String[] args) throws IOException {
 
-        //outputFilePath  = Paths.get("").toRealPath().getParent().toString();
-        outputFilePath = Paths.get("").toRealPath().toString();
-
-        challengerData();
-        System.out.println("Challenger data is opgehaald.");
-        //matchidtest();
+        //leaderboardTest();
+        //appendBracketsWithIDs();
+        //getMatchHistoryByAccountID();
+        //challengerData();
+        matchidtest();
         //championTest();
-        leaderboardTest();
-        System.out.println("Page 1 van alle brackets is opgehaald.");
-        appendBracketsWithIDs();
-        System.out.println("De accountID's zijn toegevoegd.");
+
     }
 
     public static void championTest()throws IOException{
-        champions champs = new champions(outputFilePath);
+        System.out.println("ChampionTest");
+        champions champs = new champions();
         champs.getData();
     }
 
     public static void leaderboardTest()  throws IOException {
-        leagueV4EntriesQueTierDivision test = new leagueV4EntriesQueTierDivision(outputFilePath + "/LoLparser/CSVs/PlayersPerBracket/",divisions,tiers,api_key,region);
+        System.out.println("LeaderboardTest");
+        leagueV4EntriesQueTierDivision test = new leagueV4EntriesQueTierDivision(divisions,tiers,api_key,region);
     }
 
     public static void getMatchHistoryByAccountID() throws IOException{
-
+        System.out.println("MatchHistoryTest");
+        MatchHistory matchHistory = new MatchHistory(divisions,tiers,api_key,region);
+        matchHistory.getdata();
     }
 
     public static void matchidtest() throws IOException {
-        matchv4MatchesByMatchID test = new matchv4MatchesByMatchID(outputFilePath);
-        String id = "4433359617";
-        test.getData(region,id,api_key);
+        System.out.println("MatchID test");
+        matchv4MatchesByMatchID test = new matchv4MatchesByMatchID(api_key,region);
+        test.writeToOneCSV();
     }
 
     public static void challengerData() throws  IOException{
-        challengerSoloQue5x5 output = new challengerSoloQue5x5(outputFilePath + "/LoLparser/CSVs/PlayersPerBracket/");
+        challengerSoloQue5x5 output = new challengerSoloQue5x5( "LoLparser/CSVs/PlayersPerBracket/");
         output.getData(region,api_key);
     }
 
     public static void appendBracketsWithIDs() throws IOException{
-        appendCSVs test = new appendCSVs(outputFilePath + "/LoLparser/CSVs/PlayersPerBracket/",divisions,tiers,api_key,region);
-        test.getAllAccountIDsTierDivision();
+        System.out.println("Append with IDs test");
+        appendCSVs test = new appendCSVs(api_key,region);
+        test.getAllIDs();
     }
 }
