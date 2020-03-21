@@ -14,12 +14,10 @@ public class leagueV4EntriesQueTierDivision {
         this.tiers = tier;
         this.apiKey = apiKey;
         this.region = region;
-
-        getData();
     }
 
     public void getData() throws IOException {
-        String outputFile = "LoLparser/CSVs/PlayersPerBracket/AllPlayers.csv";
+        String outputFile = "LoLparser/CSVs/AllPlayers.csv";
         String placeHolder = "";
 
         for (String tier: tiers) {
@@ -27,7 +25,6 @@ public class leagueV4EntriesQueTierDivision {
                 for(String page:pages) {
 
                     parser.sleep(1500);
-                    //String outputFile = "LoLparser/CSVs/PlayersPerBracket/" + tier + "-" + division + ".csv";
                     String urlWhole = "https://" + region + ".api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/" + tier + "/" +
                             division + "?page=" + page + "&api_key=" + apiKey;
                     String jsonString = parser.returnJsonStringFromUrl(urlWhole, "");
@@ -36,7 +33,7 @@ public class leagueV4EntriesQueTierDivision {
                     } else {
                         placeHolder = placeHolder + "," + jsonString.substring(1, jsonString.length() - 1);
                     }
-                    //parser.generateCSV(urlWhole,outputFile);
+
                 }
             }
         }

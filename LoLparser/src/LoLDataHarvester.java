@@ -8,19 +8,23 @@ import java.util.ArrayList;
 
 public class LoLDataHarvester {
 
-    private static String api_key = "";
-    private static String region = "euw1";
-    private static String[] tiers = {"DIAMOND","PLATINUM","GOLD","SILVER","BRONZE","IRON"};
-    private static String[] divisions = {"I","II","III","IV"};
+    private static String api_key = ""; //Hier voer je je API key in, deze is nodig in de URLs om toegang te verkrijgen tot de server.
+    private static String region = "euw1"; //De region waarvoor we de data ophalen.
+    //private static String[] tiers = {"DIAMOND","PLATINUM","GOLD","SILVER","BRONZE","IRON"}; //De tiers die we scannen.
+    //private static String[] divisions = {"I","II","III","IV"}; //De brackets die we scannen.
+
+    private static String[] tiers = {"DIAMOND"}; //Single tier voor test.
+    private static String[] divisions = {"I"}; //Single bracket voor test.
 
     public static void main(String[] args) throws IOException {
 
-        //leaderboardTest();
-        //appendBracketsWithIDs();
-        //getMatchHistoryByAccountID();
-        //challengerData();
-        matchidtest();
-        //championTest();
+        leaderboardTest(); //calld de functie die alle spelers ophaalt per bracket/tier.
+        appendBracketsWithIDs(); //Calld de functie die alle speler data met accountID's aanvult, deze ID fungeert als Key voor elke tabel.
+        getMatchHistoryByAccountID(); //Calld de functie die de matchhistory per speler ophaalt.
+        //challengerData(); //Calld de functie die de data van de challenger tier ophaalt.
+        matchidtest(); //Calld de functie die alle data van de gespeelde matches ophaalt.
+        getAllMasteries(); //Calld de functie die per speler ophaalt hoe begaafd hij is met elke champion.
+        //championTest(); //Calld de functie die alle data ophaalt per champion.
 
     }
 
@@ -33,6 +37,7 @@ public class LoLDataHarvester {
     public static void leaderboardTest()  throws IOException {
         System.out.println("LeaderboardTest");
         leagueV4EntriesQueTierDivision test = new leagueV4EntriesQueTierDivision(divisions,tiers,api_key,region);
+        test.getData();
     }
 
     public static void getMatchHistoryByAccountID() throws IOException{
@@ -56,5 +61,11 @@ public class LoLDataHarvester {
         System.out.println("Append with IDs test");
         appendCSVs test = new appendCSVs(api_key,region);
         test.getAllIDs();
+    }
+
+    private static void getAllMasteries() throws IOException{
+        System.out.println("Get all champion masteries");
+        playerMasteries test = new playerMasteries(api_key,region);
+        test.getdata();
     }
 }

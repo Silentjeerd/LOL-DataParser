@@ -12,8 +12,8 @@ public class appendCSVs {
 
     public void getAllIDs() throws IOException{
         final String lineSep=System.getProperty("line.separator");
-        String fileToRead = "LoLparser/CSVs/PlayersPerBracket/AllPlayers.csv"; //File die uitgelezen moet worden
-        String fileToWrite = "LoLparser/CSVs/PlayersPerBracket/AllPlayersWithIDs.csv"; //File waar de nieuwe data heen moet
+        String fileToRead = "LoLparser/CSVs/AllPlayers.csv"; //File die uitgelezen moet worden
+        String fileToWrite = "LoLparser/CSVs/AllPlayersWithIDs.csv"; //File waar de nieuwe data heen moet
         BufferedReader fileReader = new BufferedReader(new FileReader(fileToRead)); //opent de reader
         BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite))); //opent de writer
         int lineCount = parser.countLines(fileToRead); //telt het aantal regels van de readfile zodat ik progressie naar de console kan schrijven
@@ -22,7 +22,7 @@ public class appendCSVs {
         int i = 0;
 
         //moet line != null zijn, voor test purpose i < 3
-        for ( line = fileReader.readLine(); i < 2; line = fileReader.readLine(),i++)
+        for ( line = fileReader.readLine(); i < 3; line = fileReader.readLine(),i++)
         {
             parser.sleep(1500); //slaapt 1.5seconden vanwege api limitaties.
             if(i > 0){

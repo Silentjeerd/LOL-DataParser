@@ -22,10 +22,11 @@ public class MatchHistory {
         this.apiKey = apiKey;
         this.region = region;
     }
+
     public void getdata() throws IOException{
         final String lineSep=System.getProperty("line.separator");
-        String readFile = "LoLparser/CSVs/PlayersPerBracket/AllPlayersWithIDs.csv";
-        String outputFile = "LoLparser/CSVs/MatchHistory/AllMatchHistory.csv";
+        String readFile = "LoLparser/CSVs/AllPlayersWithIDs.csv";
+        String outputFile = "LoLparser/CSVs/AllMatchHistory.csv";
         String placeHolder = "";
         int lineCount = parser.countLines(readFile);
         BufferedReader reader = new BufferedReader(new FileReader(readFile));
@@ -34,7 +35,7 @@ public class MatchHistory {
         String[] tokens;
         int i = 0;
 
-        for (line = reader.readLine(); i < 2;line = reader.readLine(),i++){
+        for (line = reader.readLine(); i < 3;line = reader.readLine(),i++){
             if(i > 0){
                 parser.sleep(1500);
                 tokens = line.split(",");
