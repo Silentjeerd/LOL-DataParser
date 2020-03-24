@@ -26,26 +26,41 @@ public class playerMasteries {
         int i = 0;
 
         for (line = reader.readLine(); i < 3;line = reader.readLine(),i++){
-            if(i > 0){
-                parser.sleep(1500);
-                tokens = line.split(",");
-                String summoner = tokens[4].trim().substring(1,tokens[4].trim().length() - 1);
-                String urlWhole = "https://" + region + ".api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summoner + "?api_key=" + apiKey;
 
-                //haalt een subarray op.
-                String jsonString = parser.returnJsonStringFromUrl(urlWhole, "");
+            int tryCount = 0;
+            int maxTries = 5;
 
-                if (placeHolder == "") {
-                    placeHolder = jsonString.substring(0, jsonString.length() - 1);
-                } else {
-                    placeHolder = placeHolder + "," + jsonString.substring(1, jsonString.length() - 1);
+            tokens = line.split(",");
+            String summoner = tokens[4].trim().substring(1,tokens[4].trim().length() - 1);
+            while(tryCount < maxTries){
+                try{
+                    if(i > 0){
+                        parser.sleep(1500);
+                        String urlWhole = "https://" + region + ".api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summoner + "?api_key=" + apiKey;
+                        //haalt een subarray op.
+                        String jsonString = parser.returnJsonStringFromUrl(urlWhole, "");
+
+                        if (placeHolder == "") {
+                            placeHolder = jsonString.substring(0, jsonString.length() - 1);
+                        } else {
+                            placeHolder = placeHolder + "," + jsonString.substring(1, jsonString.length() - 1);
+                        }
+
+                    }
+                    tryCount = maxTries;
+                    System.out.println("Done with: " + (i+1) + " out of " + lineCount);
+                }catch (Exception e){
+                    parser.sleep(2000);
+                    tryCount++;
+                    if(tryCount == maxTries) System.out.println(e.toString());
                 }
-
             }
-            System.out.println("Done with: " + (i+1) + " out of " + lineCount);
         }
-
-        placeHolder = placeHolder +"]";
-        parser.generateCSVFromJString(placeHolder,outputFile);
+        if(placeHolder != ""){
+            placeHolder = placeHolder +"]";
+            parser.generateCSVFromJString(placeHolder,outputFile);
+        }else{
+            System.out.println("Failed to retrieve player masteries!");
+        }
     }
 }

@@ -24,17 +24,30 @@ public class appendCSVs {
         //moet line != null zijn, voor test purpose i < 3
         for ( line = fileReader.readLine(); i < 3; line = fileReader.readLine(),i++)
         {
-            parser.sleep(1500); //slaapt 1.5seconden vanwege api limitaties.
-            if(i > 0){
-                tokens = line.split(",");
-                String summoner = tokens[4].trim().substring(1,tokens[4].trim().length() - 1); //haalt de summonerid op en trimt deze voor de url
-                String url = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/" + summoner + "?api_key=" + apiKey; //url voor summoner data
-                String accountID = parser.getAccountID(url); //haalt het accountID op van de summoner
-                fileWriter.write(line+","+accountID+lineSep); //maakt een nieuwe regel en schrijft deze in het nieuwe bestand.
-            }else{
-                fileWriter.write(line+",/AccountID"+lineSep); //als het de eerste regel van de file is wordt er een nieuwe kolom ingevoegd.
+            int tryCount = 0;
+            int maxTries = 5;
+
+            tokens = line.split(",");
+            String summoner = tokens[4].trim().substring(1,tokens[4].trim().length() - 1);//haalt de summonerid op en trimt deze voor de url
+
+            while(tryCount < maxTries){
+                try{
+                    parser.sleep(1500); //slaapt 1.5seconden vanwege api limitaties.
+                    if(i > 0){
+                        String url = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/" + summoner + "?api_key=" + apiKey; //url voor summoner data
+                        String accountID = parser.getAccountID(url); //haalt het accountID op van de summoner
+                        fileWriter.write(line+","+accountID+lineSep); //maakt een nieuwe regel en schrijft deze in het nieuwe bestand.
+                    }else{
+                        fileWriter.write(line+",/AccountID"+lineSep); //als het de eerste regel van de file is wordt er een nieuwe kolom ingevoegd.
+                    }
+                    System.out.println("Done with: " + (i+1) + " out of " + lineCount); //print de progressie in je console.
+                    tryCount = maxTries;
+                }catch (Exception e){
+                    parser.sleep(2000);
+                    tryCount++;
+                    if(tryCount == maxTries) System.out.println(e.toString());
+                }
             }
-            System.out.println("Done with: " + (i+1) + " out of " + lineCount); //print de progressie in je console.
         }
         fileWriter.close(); //sluit de reader en writer.
         fileReader.close();

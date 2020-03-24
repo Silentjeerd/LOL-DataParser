@@ -18,14 +18,14 @@ public class LoLDataHarvester {
 
     public static void main(String[] args) throws IOException {
 
-        leaderboardTest(); //calld de functie die alle spelers ophaalt per bracket/tier.
+        getAllPlayerRanks(); //calld de functie die alle spelers ophaalt per bracket/tier.
         appendBracketsWithIDs(); //Calld de functie die alle speler data met accountID's aanvult, deze ID fungeert als Key voor elke tabel.
         getMatchHistoryByAccountID(); //Calld de functie die de matchhistory per speler ophaalt.
         //challengerData(); //Calld de functie die de data van de challenger tier ophaalt.
-        matchidtest(); //Calld de functie die alle data van de gespeelde matches ophaalt.
+        matchDataByID(); //Calld de functie die alle data van de gespeelde matches ophaalt.
         getAllMasteries(); //Calld de functie die per speler ophaalt hoe begaafd hij is met elke champion.
         //championTest(); //Calld de functie die alle data ophaalt per champion.
-
+        //getChampionRotation();
     }
 
     public static void championTest()throws IOException{
@@ -34,22 +34,22 @@ public class LoLDataHarvester {
         champs.getData();
     }
 
-    public static void leaderboardTest()  throws IOException {
-        System.out.println("LeaderboardTest");
-        leagueV4EntriesQueTierDivision test = new leagueV4EntriesQueTierDivision(divisions,tiers,api_key,region);
-        test.getData();
+    public static void getAllPlayerRanks()  throws IOException {
+        System.out.println("Get all player rank data");
+        leagueV4EntriesQueTierDivision leaderboard = new leagueV4EntriesQueTierDivision(divisions,tiers,api_key,region);
+        leaderboard.getData();
     }
 
     public static void getMatchHistoryByAccountID() throws IOException{
-        System.out.println("MatchHistoryTest");
+        System.out.println("Getting all match history");
         MatchHistory matchHistory = new MatchHistory(divisions,tiers,api_key,region);
         matchHistory.getdata();
     }
 
-    public static void matchidtest() throws IOException {
-        System.out.println("MatchID test");
-        matchv4MatchesByMatchID test = new matchv4MatchesByMatchID(api_key,region);
-        test.writeToOneCSV();
+    public static void matchDataByID() throws IOException {
+        System.out.println("Getting all match data");
+        matchv4MatchesByMatchID getMatchData = new matchv4MatchesByMatchID(api_key,region);
+        getMatchData.writeToOneCSV();
     }
 
     public static void challengerData() throws  IOException{
@@ -58,14 +58,20 @@ public class LoLDataHarvester {
     }
 
     public static void appendBracketsWithIDs() throws IOException{
-        System.out.println("Append with IDs test");
-        appendCSVs test = new appendCSVs(api_key,region);
-        test.getAllIDs();
+        System.out.println("Appending players with IDs");
+        appendCSVs append = new appendCSVs(api_key,region);
+        append.getAllIDs();
     }
 
-    private static void getAllMasteries() throws IOException{
-        System.out.println("Get all champion masteries");
-        playerMasteries test = new playerMasteries(api_key,region);
-        test.getdata();
+    private static void getAllMasteries() throws IOException {
+        System.out.println("Getting all player masteries");
+        playerMasteries masteries = new playerMasteries(api_key, region);
+        masteries.getdata();
+    }
+
+    private static void getChampionRotation() throws IOException{
+        System.out.println("Getting Champion Rotation");
+        championRotations rotation = new championRotations(api_key,region);
+        rotation.getData();
     }
 }

@@ -63,7 +63,6 @@ public class parser {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             String jsonText = readAll(rd);
             //return jsonText;
-
             String wantedString;
             if(subarray == ""){
                 wantedString = jsonText;

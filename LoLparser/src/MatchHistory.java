@@ -36,27 +36,40 @@ public class MatchHistory {
         int i = 0;
 
         for (line = reader.readLine(); i < 3;line = reader.readLine(),i++){
-            if(i > 0){
-                parser.sleep(1500);
-                tokens = line.split(",");
-                String urlWhole = "https://" + region + ".api.riotgames.com/lol/match/v4/matchlists/by-account/" + tokens[17] + "?api_key=" + apiKey;
+            tokens = line.split(",");
+            String summoner = tokens[17];
+            int tryCount = 0;
+            int maxTries = 5;
+            while(tryCount < maxTries){
+             try{
+                 if(i > 0){
+                     parser.sleep(1500);
+                     String urlWhole = "https://" + region + ".api.riotgames.com/lol/match/v4/matchlists/by-account/" + summoner + "?api_key=" + apiKey;
+                     //haalt een subarray op.
+                     String jsonString = parser.returnJsonStringFromUrl(urlWhole,"matches");
+                     jsonString = jsonString.replace('"' + "gameId" +'"','"' + "accountId" + '"' + ':' + '"' + summoner + '"' + ',' + '"' + "gameId" +'"');
+                     if(placeHolder == ""){
+                         placeHolder = jsonString.substring(0,jsonString.length() -1);
+                     }else{
+                         placeHolder = placeHolder + "," + jsonString.substring(1,jsonString.length()-1);
+                     }
 
-                //haalt een subarray op.
-                String jsonString = parser.returnJsonStringFromUrl(urlWhole,"matches");
-
-                jsonString = jsonString.replace('"' + "gameId" +'"','"' + "accountId" + '"' + ':' + '"' + tokens[17] + '"' + ',' + '"' + "gameId" +'"');
-
-                if(placeHolder == ""){
-                    placeHolder = jsonString.substring(0,jsonString.length() -1);
-                }else{
-                    placeHolder = placeHolder + "," + jsonString.substring(1,jsonString.length()-1);
-                }
-
+                 }
+                 tryCount = maxTries;
+             }catch (Exception e){
+                 parser.sleep(2000);
+                 tryCount++;
+                 if(tryCount == maxTries) System.out.println(e.toString());
+             }
             }
             System.out.println("Done with: " + (i+1) + " out of " + lineCount);
         }
 
-        placeHolder = placeHolder +"]";
-        parser.generateCSVFromJString(placeHolder,outputFile);
+        if(placeHolder != ""){
+            placeHolder = placeHolder +"]";
+            parser.generateCSVFromJString(placeHolder,outputFile);
+        }else{
+            System.out.println("Failed to retrieve any match history");
+        }
     }
 }
