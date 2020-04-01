@@ -17,6 +17,8 @@ public class LoLDataHarvester {
     private static String[] divisions = {"I"}; //Single bracket voor test.
 
     public static void main(String[] args) throws IOException {
+        createDatabase db = new createDatabase("postgres", "passwordhere", "lolparserdata",5432, "localhost");
+
 
         getAllPlayerRanks(); //calld de functie die alle spelers ophaalt per bracket/tier.
         appendBracketsWithIDs(); //Calld de functie die alle speler data met accountID's aanvult, deze ID fungeert als Key voor elke tabel.
