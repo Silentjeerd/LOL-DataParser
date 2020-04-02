@@ -1,6 +1,6 @@
+package com.LoLDataHarvester;
+
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class champions {
 
@@ -16,10 +16,10 @@ public class champions {
 
         String replaceString = '"' + "type" +'"';
         String replace = '"' + "data" + '"';
-        String with = '"' + "champions";
+        String with = '"' + "com.LoLDataHarvester.champions";
         championData = championData.substring(74,championData.length()-1);
         System.out.println(championData);
-        championData = "{" + '"' + "champions" + '"' + ":[" + championData + "]}";
+        championData = "{" + '"' + "com.LoLDataHarvester.champions" + '"' + ":[" + championData + "]}";
         System.out.println(championData);
         parser.generateCSVFromJString(championData,outputFile);
     }

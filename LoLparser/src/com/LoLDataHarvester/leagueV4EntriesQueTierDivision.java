@@ -1,14 +1,14 @@
-import java.io.File;
+package com.LoLDataHarvester;
+
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 
 public class leagueV4EntriesQueTierDivision {
 
     private String[] divisions, tiers;
     private String apiKey, region;
     private  String[] pages = {"1"};
+
+
     public leagueV4EntriesQueTierDivision(String[] division, String[] tier, String apiKey, String region) throws IOException {
         this.divisions = division;
         this.tiers = tier;

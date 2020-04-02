@@ -21,9 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 public class parser {
-
     static private String inputfile;
 
+    //TODO Tjeerd please comment !!
+
+    /**
+     *
+     * @param millis
+     */
     static void sleep(long millis){
         try {
             Thread.sleep(millis);
@@ -32,6 +37,12 @@ public class parser {
         }
     }
 
+    /**
+     *
+     * @param rd
+     * @return
+     * @throws IOException
+     */
     static private String readAll(Reader rd) throws IOException{
         StringBuilder sb = new StringBuilder();
         int cp;
@@ -41,6 +52,12 @@ public class parser {
         return sb.toString();
     }
 
+    /**
+     *
+     * @param url
+     * @throws IOException
+     * @throws JSONException
+     */
     static private void readJsonFromUrl(String url) throws IOException, JSONException{
         InputStream is = new URL(url).openStream();
 
@@ -57,6 +74,14 @@ public class parser {
         }
     }
 
+    /**
+     *
+     * @param url
+     * @param subarray
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     */
     static public String returnJsonStringFromUrl(String url,String subarray) throws IOException, JSONException{
         InputStream is = new URL(url).openStream();
 
@@ -81,6 +106,12 @@ public class parser {
         }
     }
 
+    /**
+     *
+     * @param inputString
+     * @param outputFile
+     * @throws IOException
+     */
     static public void generateCSVFromJString(String inputString, String outputFile) throws IOException{
 
         JFlat flatMe = new JFlat(inputString);
@@ -88,6 +119,12 @@ public class parser {
         flatMe.write2csv(outputFile);
     }
 
+    /**
+     *
+     * @param url
+     * @param outputFile
+     * @throws IOException
+     */
     static public void generateCSV(String url,String outputFile) throws IOException{
 
         readJsonFromUrl(url);
@@ -97,6 +134,12 @@ public class parser {
         flatMe.write2csv(outputFile);
     }
 
+    /**
+     *
+     * @param url
+     * @return
+     * @throws IOException
+     */
     static public String getAccountID(String url) throws IOException{
         InputStream is = new URL(url).openStream();
         BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -106,9 +149,14 @@ public class parser {
         return accountId;
     }
 
+    /**
+     *
+     * @param filename
+     * @return
+     * @throws IOException
+     */
     static public int countLines(String filename) throws IOException {
-        InputStream is = new BufferedInputStream(new FileInputStream(filename));
-        try {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(filename))) {
             byte[] c = new byte[1024];
 
             int readChars = is.read(c);
@@ -120,7 +168,7 @@ public class parser {
             // make it easy for the optimizer to tune this loop
             int count = 0;
             while (readChars == 1024) {
-                for (int i=0; i<1024;) {
+                for (int i = 0; i < 1024; ) {
                     if (c[i++] == '\n') {
                         ++count;
                     }
@@ -130,7 +178,7 @@ public class parser {
 
             // count remaining characters
             while (readChars != -1) {
-                for (int i=0; i<readChars; ++i) {
+                for (int i = 0; i < readChars; ++i) {
                     if (c[i] == '\n') {
                         ++count;
                     }
@@ -139,8 +187,6 @@ public class parser {
             }
 
             return count == 0 ? 1 : count;
-        } finally {
-            is.close();
         }
     }
 

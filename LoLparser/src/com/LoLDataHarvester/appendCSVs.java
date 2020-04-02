@@ -1,5 +1,6 @@
+package com.LoLDataHarvester;
+
 import java.io.*;
-import java.util.ArrayList;
 
 public class appendCSVs {
 

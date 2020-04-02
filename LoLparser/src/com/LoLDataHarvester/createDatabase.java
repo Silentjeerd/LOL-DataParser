@@ -1,3 +1,5 @@
+package com.LoLDataHarvester;
+
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -19,6 +21,10 @@ public class createDatabase {
         }else{
             System.out.println("Tables are already made!");
         }
+    }
+
+    public databaseConnection getDbConn() {
+        return dbConn;
     }
 
     public boolean tablesAreMade(){
@@ -148,7 +154,7 @@ public class createDatabase {
         System.out.println("Succesfully created MatchHistoryTable");
     }
 
-    // TODO fix sql code
+    // TODO test sql code
     public void createTeamTable() {
         dbConn.connectToDatabaseServer();
         try {
@@ -168,14 +174,14 @@ public class createDatabase {
         System.out.println("Succesfully created TeamTable");
     }
 
-    // TODO fix sql code
     public void createTeamDataTable() {
         dbConn.connectToDatabaseServer();
         try {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE TEAMDATA " +
-                    "(MachtTeamID        INT , " +
-                    " MatchID            INT REFERENCES MATCHHISTORY," +
+                    "(" +
+                    " MatchTeamID        INT PRIMARY KEY         , " +
+                    " MatchID            INT                     , " +
                     " TeamID             INT                     , " +
                     " Win                TEXT                    , " +
                     " firstBloodTeam     BOOLEAN                 , " +
