@@ -1,3 +1,3 @@
-/leagueId,/queueType,/tier,/rank,/summonerId,/summonerName,/leaguePoints,/wins,/losses,/veteran,/inactive,/freshBlood,/hotStreak,/miniSeries/target,/miniSeries/wins,/miniSeries/losses,/miniSeries/progress,/AccountID
-"13dab1d7-70a0-42e4-9672-532bdd8d8e9c","RANKED_SOLO_5x5","DIAMOND","I","ySaHYPLgtGwRc-d_Qt9jfN8XAU4PCZ8tqPft3cmbLPd35kzY","ccccllllllll",1.0,111.0,108.0,false,false,false,false,,,,,20VITQtkdhDPhj4phneOY0NWmpYHQWh-wVwzJeS-OIPXrrU
-"7c699201-2ae5-49ca-adba-208471db946f","RANKED_SOLO_5x5","DIAMOND","I","Kax45o-rr_ugdklDQewqxBkrmpPD79i7fRqu_0iErhLwrBk8","Soloitude",100.0,96.0,71.0,false,false,false,false,3.0,1.0,1.0,"WLNNN",plYMY8WnEUsSGji9ZWbH6wNP5PQsQgHMHeQ5YBcRC-ytFO4
+/leagueId,/queueType,/tier,/rank,/summonerId,/summonerName,/leaguePoints,/wins,/losses,/veteran,/inactive,/freshBlood,/hotStreak,/miniSeries/target,/miniSeries/wins,/miniSeries/losses,/miniSeries/progress,/AccountID/SummonerLevel
+"13dab1d7-70a0-42e4-9672-532bdd8d8e9c","RANKED_SOLO_5x5","DIAMOND","I","ySaHYPLgtGwRc-d_Qt9jfN8XAU4PCZ8tqPft3cmbLPd35kzY","ccccllllllll",1.0,111.0,108.0,false,false,false,false,,,,,20VITQtkdhDPhj4phneOY0NWmpYHQWh-wVwzJeS-OIPXrrU,75
+"7c699201-2ae5-49ca-adba-208471db946f","RANKED_SOLO_5x5","DIAMOND","I","Kax45o-rr_ugdklDQewqxBkrmpPD79i7fRqu_0iErhLwrBk8","Wìldone",45.0,96.0,74.0,false,false,false,false,,,,,plYMY8WnEUsSGji9ZWbH6wNP5PQsQgHMHeQ5YBcRC-ytFO4,158
