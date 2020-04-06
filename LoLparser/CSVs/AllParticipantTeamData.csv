@@ -1,0 +1,5 @@
+matchID,teamID,win,firstBlood,firstRiftHerald,riftHeraldKills,firstBaron,baronKills,firstDragon,dragonKills,firstInhib,inhibKills,firstTower,towerKills,matchDurationSeconds
+4452143678,100,Win,true,true,1,false,0,false,1,true,1,true,7,1182
+4452143678,200,Fail,false,false,0,false,0,true,1,false,0,false,1,1182
+4452150484,100,Win,true,true,1,false,0,false,0,false,0,true,3,968
+4452150484,200,Fail,false,false,0,false,0,true,2,false,0,false,0,968
