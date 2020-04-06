@@ -133,7 +133,7 @@ public class createDatabase {
                     " FirstBlood        TEXT            NOT NULL, " +
                     " FirstInhibitor    TEXT            NOT NULL, " +
                     " FirstTower        TEXT            NOT NULL, " +
-                    " GoldeEarned       TEXT            NOT NULL, " +
+                    " GoldEarned        TEXT            NOT NULL, " +
                     " CreepKills        TEXT            NOT NULL, " +
                     " PlayerKills       TEXT            NOT NULL," +
                     " PlayerAssists     TEXT            NOT NULL," +
