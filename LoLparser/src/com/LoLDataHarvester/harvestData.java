@@ -27,12 +27,12 @@ public class harvestData {
      * @throws IOException
      */
     public void run() throws IOException {
-        getAllPlayerRanks();
-        appendBracketsWithIDs();
-        getMatchHistoryByAccountID();
+        //getAllPlayerRanks();
+        //appendBracketsWithIDs();
+        //getMatchHistoryByAccountID();
         //getChallengerData();
         getMatchDataByID();
-        getAllMasteries();
+        //getAllMasteries();
         //getChampions();
         //getChampionRotation();
     }
@@ -57,8 +57,10 @@ public class harvestData {
 
     private void getMatchDataByID() throws IOException {
         System.out.println("Getting all match data");
-        matchv4MatchesByMatchID getMatchData = new matchv4MatchesByMatchID(api_key,region);
-        getMatchData.writeToOneCSV();
+        for(int i = 1; i < 4 ; i++){
+            matchv4MatchesByMatchID getMatchData = new matchv4MatchesByMatchID(api_key,region,i);
+            getMatchData.writeToOneCSV();
+        }
     }
 
     private void getChallengerData() throws  IOException{
