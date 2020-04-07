@@ -254,11 +254,8 @@ public class fillDatabase {
         String csvUrl = csvURLs[1]; // AllMatchHistory.csv
 
         String sql_INSERT = "INSERT INTO MATCHHISTORY" +
-                "(MatchID,ChampionID,AccountID,Lane,Role,Region," +
-                "Spell1,Spell2,FirstBlood,FirstInhibitor," +
-                "FirstTower,GoldeEarned,CreepKills,PlayerKills," +
-                "PlayerAssists,Item0,Item1,Item2,Item3,Item4,Item5,Item6)" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; // a ? is a placeholder we will fill later
+                "(MatchID,ChampionID,AccountID,Lane,Role,Region)" +
+                "VALUES(?,?,?,?,?,?)"; // a ? is a placeholder we will fill later
 
         dbConn.connectToDatabaseServer();
         try{
