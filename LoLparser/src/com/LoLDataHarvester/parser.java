@@ -146,7 +146,8 @@ public class parser {
         String jsonText = readAll(rd);
         JSONObject json = new JSONObject(jsonText);
         String accountId = json.getString("accountId");
-        return accountId;
+        int summonerLVL = json.getInt("summonerLevel");
+        return accountId + ',' + summonerLVL;
     }
 
     /**

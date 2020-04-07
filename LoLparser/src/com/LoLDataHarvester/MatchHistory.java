@@ -30,7 +30,7 @@ public class MatchHistory {
         String[] tokens;
         int i = 0;
 
-        for (line = reader.readLine(); i < 3;line = reader.readLine(),i++){
+        for (line = reader.readLine(); line != null;line = reader.readLine(),i++){
             tokens = line.split(",");
             String summoner = tokens[17];
             int tryCount = 0;
@@ -39,7 +39,7 @@ public class MatchHistory {
              try{
                  if(i > 0){
                      parser.sleep(1500);
-                     String urlWhole = "https://" + region + ".api.riotgames.com/lol/match/v4/matchlists/by-account/" + summoner + "?api_key=" + apiKey;
+                     String urlWhole = "https://" + region + ".api.riotgames.com/lol/match/v4/matchlists/by-account/" + summoner + "?queue=420&api_key=" + apiKey;
                      //haalt een subarray op.
                      String jsonString = parser.returnJsonStringFromUrl(urlWhole,"matches");
                      jsonString = jsonString.replace('"' + "gameId" +'"','"' + "accountId" + '"' + ':' + '"' + summoner + '"' + ',' + '"' + "gameId" +'"');

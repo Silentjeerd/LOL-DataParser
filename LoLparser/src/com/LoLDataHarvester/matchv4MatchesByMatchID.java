@@ -2,27 +2,38 @@ package com.LoLDataHarvester;
 
 import java.io.*;
 
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import jdk.jshell.spi.ExecutionControlProvider;
+import org.json.CDL;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import org.apache.commons.io.FileUtils;
 
 public class matchv4MatchesByMatchID {
 
     private String apiKey,region;
     private String fileToWrite1,fileToWrite2,fileToWrite3,fileToWrite4,fileToGetAll;
+    private int runnumber;
 
-    public matchv4MatchesByMatchID(String apiKey,String region) throws IOException {
+    public matchv4MatchesByMatchID(String apiKey,String region,int runnumber) throws IOException {
         this.region = region;
         this.apiKey = apiKey;
+        this.runnumber = runnumber;
 
         //De CSV filepaths waarin de data moet worden opgeslagen.
-        this.fileToWrite1 = "LoLparser/CSVs/AllParticipantIDs.csv";
-        this.fileToWrite2 = "LoLparser/CSVs/AllParticipantTeamData.csv";
-        this.fileToWrite3 = "LoLparser/CSVs/AllParticipantData.csv";
-        this.fileToWrite4 = "LoLparser/CSVs/AllMatchesBans.csv";
+        this.fileToWrite1 = "LoLparser/CSVs/AllParticipantIDsNr" + runnumber + ".csv";
+        this.fileToWrite2 = "LoLparser/CSVs/AllParticipantTeamDataNr" + runnumber + ".csv";
+        this.fileToWrite3 = "LoLparser/CSVs/AllParticipantDataNr" + runnumber + ".csv";
+        this.fileToWrite4 = "LoLparser/CSVs/AllMatchesBansNr" + runnumber + ".csv";
         //De CSV file waaruit de individuele matchID's moeten worden gehaald voor de URL voor het HTTP request.
         this.fileToGetAll = "LoLparser/CSVs/AllMatchHistory.csv";
     }
@@ -50,11 +61,9 @@ public class matchv4MatchesByMatchID {
 
     //Deze functie haalt alle participant identities uit het JSONObject.
     private String participantsIDsToWrite(JSONObject object){
-        int participantId = object.getInt("participantId");
         JSONObject playerData = object.getJSONObject("player");
-        String accountId = playerData.getString("accountId");
-        String regionId = playerData.getString("platformId");
-        return participantId + "," + accountId + "," + regionId;
+        String accountId = playerData.getString("currentAccountId");
+        return accountId;
     }
 
     //Deze functie haalt alle participant data uit het JSONObject.
@@ -65,14 +74,24 @@ public class matchv4MatchesByMatchID {
         int spell1 = object.getInt("spell1Id");
         int spell2 = object.getInt("spell2Id");
         JSONObject playerStats = object.getJSONObject("stats");
-        boolean firstBlood = playerStats.getBoolean("firstBloodKill");
+        boolean firstBlood;
+        try{
+            firstBlood = playerStats.getBoolean("firstBloodKill");
+        }catch (Exception e){
+            firstBlood = false;
+        }
         boolean firstInhibitor;
         try{
             firstInhibitor = playerStats.getBoolean("firstInhibitorKill");
         }catch (Exception e){
             firstInhibitor = false;
         }
-        boolean firstTower = playerStats.getBoolean("firstTowerKill");
+        boolean firstTower;
+        try{
+            firstTower = playerStats.getBoolean("firstTowerKill");
+        }catch (Exception e){
+            firstTower = false;
+        }
         int goldEarned = playerStats.getInt("goldEarned");
         int creepKills = playerStats.getInt("totalMinionsKilled");
         int kills = playerStats.getInt("kills");
@@ -113,7 +132,7 @@ public class matchv4MatchesByMatchID {
         final String lineSep=System.getProperty("line.separator");
         int lineCountAll = parser.countLines(fileToGetAll);
         BufferedReader fileReaderMatchIDs = new BufferedReader(new FileReader(fileToGetAll)); //Opent de reader waar de matchIDs uit worden gelezen.
-        BufferedWriter fileWriter1 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite1))); //open de writer
+        //BufferedWriter fileWriter1 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite1))); //open de writer
         BufferedWriter fileWriter2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite2))); //open de writer
         BufferedWriter fileWriter3 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite3))); //open de writer
         BufferedWriter fileWriter4 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite4))); //open de writer
@@ -123,23 +142,27 @@ public class matchv4MatchesByMatchID {
         String readerLine = null;
         String[] readerTokens;
         int count = 0;
+        // dit bepaalt hoeveel delen je wilt doen.
+        int startingPoint = ((lineCountAll/100) * runnumber);
+        int endPoint = ((lineCountAll/100) * (runnumber+1));
 
-        for ( readerLine = fileReaderMatchIDs.readLine(); count < 3; readerLine = fileReaderMatchIDs.readLine(),count++){
+        for ( readerLine = fileReaderMatchIDs.readLine(); readerLine != null; readerLine = fileReaderMatchIDs.readLine(),count++){
             readerTokens = readerLine.split(",");
             String matchID = readerTokens[1].replace(".","").replace("E9","");
-            if(count > 0){
+            if(count > 0 & ((count % 5) == 0) & count > startingPoint & count < endPoint){
                 if(matchID.length() == 9) matchID = matchID + "0";
                 if(!matchesToCheck.contains(matchID)) matchesToCheck.add(matchID);
             }
         }
 
-        fileWriter1.write("matchID,participantID,accountID,originalRegion"+lineSep);
+        //fileWriter1.write("matchID,participantID,accountID,originalRegion"+lineSep);
         fileWriter2.write("matchID,teamID,win,firstBlood,firstRiftHerald,riftHeraldKills,firstBaron,baronKills," +
                 "firstDragon,dragonKills,firstInhib,inhibKills,firstTower,towerKills,matchDurationSeconds"+lineSep);
-        fileWriter3.write("matchID,participantID,championId,teamId,spell1,spell2,firstBlood,firstInhib,firstTower,goldEarned," +
+        fileWriter3.write("matchID,accountID,participantID,championId,teamId,spell1,spell2,firstBlood,firstInhib,firstTower,goldEarned," +
                 "creepKills,kills,deaths,assists,item0,item1,item2,item3,item4,item5,item6,visionScore"+lineSep);
         fileWriter4.write("matchID,bannedChampion"+lineSep);
-        int matchCount = matchesToCheck.size();
+
+    int matchCount = matchesToCheck.size();
         int counter = 0;
         for (String matchID:matchesToCheck) {
 
@@ -151,13 +174,6 @@ public class matchv4MatchesByMatchID {
                         parser.sleep(1500); //slaapt 1.5seconden vanwege api limitaties.
                         String urlWhole = "https://" + region + ".api.riotgames.com/lol/match/v4/matches/" + matchID + "?api_key=" + apiKey;
                         JSONObject obj = new JSONObject(parser.returnJsonStringFromUrl(urlWhole,""));
-                        JSONArray identities = obj.getJSONArray("participantIdentities"); //Dit haalt een subArray uit het JSONObject.
-                        // Elke match heeft 10 participants dus loopen we voor elke participant door de array.
-                        for(int i = 0 ; i <= 9 ; i++){
-                            JSONObject object = identities.getJSONObject(i); //Dit pakt een JSONObject uit het array.
-                            String toWrite = matchID + "," + participantsIDsToWrite(object); //Haalt de data die in de CSV moet komen op als 1 string en voegt het matchID eraantoe.
-                            fileWriter1.write(toWrite+lineSep); //Schrijft de regel weg in het CSV bestand.
-                        }
 
                         JSONArray teamData = obj.getJSONArray("teams");
                         Long matchDuration = obj.getLong("gameDuration");
@@ -173,28 +189,33 @@ public class matchv4MatchesByMatchID {
                         }
 
                         JSONArray playerStats = obj.getJSONArray("participants");
+                        JSONArray identities = obj.getJSONArray("participantIdentities");
                         for(int i = 0; i <= 9;i++){
+                            JSONObject object1 = identities.getJSONObject(i); //Dit pakt een JSONObject uit het array.
+                            String accountID = participantsIDsToWrite(object1);
                             JSONObject object = playerStats.getJSONObject(i);
-                            String toWrite = matchID + "," + participantsDataToWrite(object);
+                            String toWrite = matchID + "," + accountID + "," + participantsDataToWrite(object);
                             fileWriter3.write(toWrite+lineSep);
                         }
+
                     counter++;
                     System.out.println("Done with: " + counter + " out of " + matchCount);
                     tryCount = maxTries;
                 }catch (Exception e){
                     parser.sleep(2000);
                     tryCount++;
-                    if(tryCount == maxTries) System.out.println(e.toString());
+                    if(tryCount == maxTries)
+                        System.out.println(e.toString());
                 }
             }
         }
 
         //Sluit alle Writers en de reader.
-        fileWriter1.close();
+        //fileWriter1.close();
         fileWriter2.close();
         fileWriter3.close();
         fileWriter4.close();
         fileReaderMatchIDs.close();
-    }
+   }
 }
 

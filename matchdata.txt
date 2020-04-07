@@ -1,0 +1,59 @@
+teamData per match
+tokens1 het liefst 2 lines, index 1 en 6 of 2 en 7 to be sure w/e
+
+matchID,
+teamID, 	tokens1[13]
+win, 		tokens1[14]
+firstBlood,	tokens1[2]
+firstrifth,	tokens1[12]
+rightheralds,	tokens1[1]
+firstBaron,	tokens1[4]
+baronkills,	tokens1[8]
+firstdragon,	tokens1[5]
+dragonkills,	tokens1[7]
+firstinhib,	tokens1[9]
+inhibkills,	tokens1[3]
+towerkills,	tokens1[0]
+
+
+participantsData
+tokens2
+
+matchID,
+ParticipantsID,	tokens2[0]
+ChampionID,	tokens2[1]
+teamID,		tokens2[2]
+spell1,		tokens2[3]
+spell2,		tokens2[4]
+firstblood,	tokens2[55]
+firstinhib,	tokens2[7]
+firsttower,	tokens2[25]
+goldearned,	tokens2[70]
+creepkills,	tokens2[85]
+playerkills,	tokens2[88]
+playerDeaths,	tokens2[11]
+playerassists,	tokens2[96]
+item0,		tokens2[65]
+item1,		tokens2[67]
+item2,		tokens2[66]
+item3,		tokens2[61]
+item4,		tokens2[60]
+item5,		tokens2[63]
+item6(ward),	tokens2[62]
+
+visionscore	tokens2[53]
+
+
+
+
+
+participantsIDs
+tokens3
+
+matchID,
+participantsID,	tokens3[0]
+accountID,	tokens3[2]
+originalregion,	tokens3[8]
+
+
+

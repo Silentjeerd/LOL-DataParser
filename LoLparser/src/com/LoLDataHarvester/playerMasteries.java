@@ -27,7 +27,7 @@ public class playerMasteries {
         String[] tokens;
         int i = 0;
 
-        for (line = reader.readLine(); i < 3;line = reader.readLine(),i++){
+        for (line = reader.readLine(); line != null;line = reader.readLine(),i++){
 
             int tryCount = 0;
             int maxTries = 5;
