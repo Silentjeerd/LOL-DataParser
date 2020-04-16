@@ -21,19 +21,16 @@ import org.apache.commons.io.FileUtils;
 public class matchv4MatchesByMatchID {
 
     private String apiKey,region;
-    private String fileToWrite1,fileToWrite2,fileToWrite3,fileToWrite4,fileToGetAll;
-    private int runnumber;
+    private String fileToWrite2,fileToWrite3,fileToWrite4,fileToGetAll;
 
-    public matchv4MatchesByMatchID(String apiKey,String region,int runnumber) throws IOException {
+    public matchv4MatchesByMatchID(String apiKey,String region) throws IOException {
         this.region = region;
         this.apiKey = apiKey;
-        this.runnumber = runnumber;
 
         //De CSV filepaths waarin de data moet worden opgeslagen.
-        this.fileToWrite1 = "LoLparser/CSVs/AllParticipantIDsNr" + runnumber + ".csv";
-        this.fileToWrite2 = "LoLparser/CSVs/AllParticipantTeamDataNr" + runnumber + ".csv";
-        this.fileToWrite3 = "LoLparser/CSVs/AllParticipantDataNr" + runnumber + ".csv";
-        this.fileToWrite4 = "LoLparser/CSVs/AllMatchesBansNr" + runnumber + ".csv";
+        this.fileToWrite2 = "LoLparser/CSVs/AllParticipantTeamData.csv";
+        this.fileToWrite3 = "LoLparser/CSVs/AllParticipantData.csv";
+        this.fileToWrite4 = "LoLparser/CSVs/AllMatchesBans.csv";
         //De CSV file waaruit de individuele matchID's moeten worden gehaald voor de URL voor het HTTP request.
         this.fileToGetAll = "LoLparser/CSVs/AllMatchHistory.csv";
     }
@@ -127,50 +124,79 @@ public class matchv4MatchesByMatchID {
         return bansToWrite;
     }
 
+    private List<String> getMatchList(String file,int matchIDColumn) throws IOException {
+        List<String> checkedMatches = new ArrayList<>();
+        final String lineSep=System.getProperty("line.separator");
+        BufferedReader fileReaderMatchIDs = new BufferedReader(new FileReader(file));
+        String readerLine = null;
+        String[] readerTokens;
+        int count = 0;
+
+        for (readerLine = fileReaderMatchIDs.readLine(); readerLine != null; readerLine = fileReaderMatchIDs.readLine(),count++){
+            readerTokens = readerLine.split(",");
+
+            String matchID = readerTokens[matchIDColumn].replace(".","").replace("E9","");
+
+            if(count > 0){
+                if(matchID.length() == 9) matchID = matchID + "0";
+                if(!checkedMatches.contains(matchID)) checkedMatches.add(matchID);
+            }
+            System.out.println(count);
+        }
+
+        return checkedMatches;
+    }
+
+    private boolean doesFileExists(String file){
+        File tempDir = new File(file);
+        return tempDir.exists();
+    }
+
     //Hoofdfunctie die alle gevraagde data wegschrijft in de CSV files.
     public void writeToOneCSV() throws IOException{
         final String lineSep=System.getProperty("line.separator");
         int lineCountAll = parser.countLines(fileToGetAll);
+        System.out.println(lineCountAll);
+
+        boolean firstRun = !doesFileExists(fileToWrite2);
+
         BufferedReader fileReaderMatchIDs = new BufferedReader(new FileReader(fileToGetAll)); //Opent de reader waar de matchIDs uit worden gelezen.
-        //BufferedWriter fileWriter1 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite1))); //open de writer
-        BufferedWriter fileWriter2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite2))); //open de writer
-        BufferedWriter fileWriter3 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite3))); //open de writer
-        BufferedWriter fileWriter4 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite4))); //open de writer
+        BufferedWriter fileWriter2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite2,true))); //open de writer
+        BufferedWriter fileWriter3 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite3,true))); //open de writer
+        BufferedWriter fileWriter4 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileToWrite4,true))); //open de writer
 
-        List<String> matchesToCheck = new ArrayList<String>();
 
-        String readerLine = null;
-        String[] readerTokens;
-        int count = 0;
-        // dit bepaalt hoeveel delen je wilt doen.
-        int startingPoint = ((lineCountAll/100) * runnumber);
-        int endPoint = ((lineCountAll/100) * (runnumber+1));
-
-        for ( readerLine = fileReaderMatchIDs.readLine(); readerLine != null; readerLine = fileReaderMatchIDs.readLine(),count++){
-            readerTokens = readerLine.split(",");
-            String matchID = readerTokens[1].replace(".","").replace("E9","");
-            if(count > 0 & ((count % 5) == 0) & count > startingPoint & count < endPoint){
-                if(matchID.length() == 9) matchID = matchID + "0";
-                if(!matchesToCheck.contains(matchID)) matchesToCheck.add(matchID);
-            }
+        if(firstRun){
+            fileWriter2.write("matchID,teamID,win,firstBlood,firstRiftHerald,riftHeraldKills,firstBaron,baronKills," +
+                    "firstDragon,dragonKills,firstInhib,inhibKills,firstTower,towerKills,matchDurationSeconds"+lineSep);
+            fileWriter3.write("matchID,accountID,participantID,championId,teamId,spell1,spell2,firstBlood,firstInhib,firstTower,goldEarned," +
+                    "creepKills,kills,deaths,assists,item0,item1,item2,item3,item4,item5,item6,visionScore"+lineSep);
+            fileWriter4.write("matchID,bannedChampion"+lineSep);
+            fileWriter2.flush();
+            fileWriter3.flush();
+            fileWriter4.flush();
         }
 
-        //fileWriter1.write("matchID,participantID,accountID,originalRegion"+lineSep);
-        fileWriter2.write("matchID,teamID,win,firstBlood,firstRiftHerald,riftHeraldKills,firstBaron,baronKills," +
-                "firstDragon,dragonKills,firstInhib,inhibKills,firstTower,towerKills,matchDurationSeconds"+lineSep);
-        fileWriter3.write("matchID,accountID,participantID,championId,teamId,spell1,spell2,firstBlood,firstInhib,firstTower,goldEarned," +
-                "creepKills,kills,deaths,assists,item0,item1,item2,item3,item4,item5,item6,visionScore"+lineSep);
-        fileWriter4.write("matchID,bannedChampion"+lineSep);
+        List<String> checkedMatches = getMatchList(fileToWrite2,0);
+        System.out.println(checkedMatches.size());
+        List<String> matchesToCheck = getMatchList(fileToGetAll,1);
+        System.out.println(matchesToCheck.size());
 
-    int matchCount = matchesToCheck.size();
+        matchesToCheck.removeAll(checkedMatches);
+
+
+        int matchCount = matchesToCheck.size();
+        System.out.println(matchCount);
+
         int counter = 0;
-        for (String matchID:matchesToCheck) {
+            for (String matchID:matchesToCheck) {
 
-            int tryCount = 0;
-            int maxTries = 5;
 
-            while(tryCount < maxTries){
-                try{
+                int tryCount = 0;
+                int maxTries = 5;
+
+                while(tryCount < maxTries){
+                    try{
                         parser.sleep(1500); //slaapt 1.5seconden vanwege api limitaties.
                         String urlWhole = "https://" + region + ".api.riotgames.com/lol/match/v4/matches/" + matchID + "?api_key=" + apiKey;
                         JSONObject obj = new JSONObject(parser.returnJsonStringFromUrl(urlWhole,""));
@@ -198,20 +224,27 @@ public class matchv4MatchesByMatchID {
                             fileWriter3.write(toWrite+lineSep);
                         }
 
-                    counter++;
-                    System.out.println("Done with: " + counter + " out of " + matchCount);
-                    tryCount = maxTries;
-                }catch (Exception e){
+                        counter++;
+                        System.out.println("Done with: " + counter + " out of " + matchCount);
+                        tryCount = maxTries;
+
+                    }catch (Exception e){
                     parser.sleep(2000);
                     tryCount++;
                     if(tryCount == maxTries)
+                        counter++;
                         System.out.println(e.toString());
                 }
+            }
+
+            if(counter % 20 == 0){
+                fileWriter2.flush();
+                fileWriter3.flush();
+                fileWriter4.flush();
             }
         }
 
         //Sluit alle Writers en de reader.
-        //fileWriter1.close();
         fileWriter2.close();
         fileWriter3.close();
         fileWriter4.close();

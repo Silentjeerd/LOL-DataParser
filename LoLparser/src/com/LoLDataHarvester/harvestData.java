@@ -31,15 +31,14 @@ public class harvestData {
         //appendBracketsWithIDs();
         //getMatchHistoryByAccountID();
         //getChallengerData();
-        getMatchDataByID();
+        //getMatchDataByID();
         //getAllMasteries();
-        //getChampions();
-        //getChampionRotation();
+        getChampions();
     }
 
     private void getChampions()throws IOException {
         System.out.println("Get all Champions data");
-        champions champs = new champions();
+        champspellitems champs = new champspellitems("10.6.1");
         champs.getData();
     }
 
@@ -57,10 +56,9 @@ public class harvestData {
 
     private void getMatchDataByID() throws IOException {
         System.out.println("Getting all match data");
-        for(int i = 1; i < 4 ; i++){
-            matchv4MatchesByMatchID getMatchData = new matchv4MatchesByMatchID(api_key,region,i);
-            getMatchData.writeToOneCSV();
-        }
+        matchv4MatchesByMatchID getMatchData = new matchv4MatchesByMatchID(api_key,region);
+        getMatchData.writeToOneCSV();
+
     }
 
     private void getChallengerData() throws  IOException{

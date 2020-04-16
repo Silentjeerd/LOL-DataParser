@@ -17,7 +17,7 @@ public class LoLDataHarvester {
         /**
          * Section to start the data harvester
          */
-        harvestData harvester = new harvestData("","euw1",tiers,divisions);
+        harvestData harvester = new harvestData("RGAPI-3fd1aa73-1ab7-4311-a1fa-7813fe8c1cd9","euw1",tiers,divisions);
         harvester.run();
 
         /**
