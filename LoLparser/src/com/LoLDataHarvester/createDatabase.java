@@ -46,11 +46,8 @@ public class createDatabase {
         try {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE CHAMPION " +
-                    "(" +
-                    " ChampionID        INT PRIMARY KEY          , " +
-                    " Name              TEXT             NOT NULL, " +
-                    " PrimaryClass      TEXT             NOT NULL, " +
-                    " SecondaryClass    TEXT                       " +
+                    "(ChampionID       INT           PRIMARY KEY," +
+                    "Name              TEXT             NOT NULL " +
                     ")";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -67,7 +64,7 @@ public class createDatabase {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE SUMMONER " +
                     "(" +
-                    " AccountID         TEXT PRIMARY KEY         ," +
+                    " AccountID         TEXT            PRIMARY KEY," +
                     " SummonerID        TEXT            NOT NULL, " +
                     " Name              TEXT            NOT NULL, " +
                     " Rank              TEXT            NOT NULL, " +
@@ -130,22 +127,22 @@ public class createDatabase {
                     " Lane              TEXT            NOT NULL, " +
                     " Role              TEXT            NOT NULL, " +
                     " Region            TEXT            NOT NULL, " +
-                    " Spell1            TEXT            NOT NULL, " +
-                    " Spell2            TEXT            NOT NULL, " +
-                    " FirstBlood        TEXT            NOT NULL, " +
-                    " FirstInhibitor    TEXT            NOT NULL, " +
-                    " FirstTower        TEXT            NOT NULL, " +
-                    " GoldEarned        TEXT            NOT NULL, " +
-                    " CreepKills        TEXT            NOT NULL, " +
-                    " PlayerKills       TEXT            NOT NULL," +
-                    " PlayerAssists     TEXT            NOT NULL," +
-                    " Item0             TEXT            NOT NULL," +
-                    " Item1             TEXT            NOT NULL," +
-                    " Item2             TEXT            NOT NULL," +
-                    " Item3             TEXT            NOT NULL," +
-                    " Item4             TEXT            NOT NULL," +
-                    " Item5             TEXT            NOT NULL," +
-                    " Item6             TEXT            NOT NULL " +
+                    " Spell1            TEXT                    , " +
+                    " Spell2            TEXT                    , " +
+                    " FirstBlood        TEXT                    , " +
+                    " FirstInhibitor    TEXT                    , " +
+                    " FirstTower        TEXT                    , " +
+                    " GoldEarned        TEXT                    , " +
+                    " CreepKills        TEXT                    , " +
+                    " PlayerKills       TEXT                    , " +
+                    " PlayerAssists     TEXT                    , " +
+                    " Item0             TEXT                    , " +
+                    " Item1             TEXT                    , " +
+                    " Item2             TEXT                    , " +
+                    " Item3             TEXT                    , " +
+                    " Item4             TEXT                    , " +
+                    " Item5             TEXT                    , " +
+                    " Item6             TEXT                      " +
                     ") ";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -181,8 +178,8 @@ public class createDatabase {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE TEAMDATA " +
                     "(" +
-                    " MatchTeamID        INT PRIMARY KEY         , " +
-                    " MatchID            INT                     , " +
+                    " MatchTeamID        BIGINT PRIMARY KEY         , " +
+                    " MatchID            BIGINT                     , " +
                     " TeamID             INT                     , " +
                     " Win                TEXT                    , " +
                     " firstBloodTeam     BOOLEAN                 , " +
@@ -228,7 +225,7 @@ public class createDatabase {
         dbConn.connectToDatabaseServer();
         try {
             Statement stmt = dbConn.getConn().createStatement();
-            String sql = "CREATE TABLE SPELL " +
+            String sql = "CREATE TABLE ITEM " +
                     "(" +
                     " ItemID             INT PRIMARY KEY         , " +
                     " Name               TEXT                      " +
