@@ -2,6 +2,8 @@ package com.LoLDataHarvester;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 
 public class createDatabase {
 
@@ -9,6 +11,9 @@ public class createDatabase {
 
     public createDatabase(String user, String password, String databaseName , int port, String ipAdress){
         this.dbConn = new databaseConnection(user, password, databaseName, port, ipAdress);
+
+        dropAllTables();
+
         if(!tablesAreMade()){
             System.out.println("Tables are not made yet");
             createChampionsTable();
@@ -178,7 +183,7 @@ public class createDatabase {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE TEAMDATA " +
                     "(" +
-                    " MatchTeamID        BIGINT PRIMARY KEY         , " +
+                    " MatchTeamID        TEXT PRIMARY KEY         , " +
                     " MatchID            BIGINT                     , " +
                     " TeamID             INT                     , " +
                     " Win                TEXT                    , " +
@@ -249,13 +254,17 @@ public class createDatabase {
             String sql_matchhistory =       "DROP TABLE MATCHHISTORY    CASCADE ";
             String sql_summoner =           "DROP TABLE SUMMONER        CASCADE ";
             String sql_teamdata =           "DROP TABLE TEAMDATA        CASCADE ";
-            String sql_team =               "DROP TABLE TEAM            CASCADE ";
+            //String sql_team =               "DROP TABLE TEAM            CASCADE ";
+            String sql_item =               "DROP TABLE ITEM            CASCADE ";
+            stmt.executeUpdate(sql_item);
+            String sql_spell =               "DROP TABLE SPELL          CASCADE ";
+            stmt.executeUpdate(sql_spell);
             stmt.executeUpdate(sql_champion);
             stmt.executeUpdate(sql_championmastery);
             stmt.executeUpdate(sql_matchhistory);
             stmt.executeUpdate(sql_summoner);
             stmt.executeUpdate(sql_teamdata);
-            stmt.executeUpdate(sql_team);
+            //stmt.executeUpdate(sql_team);
             stmt.close();
             dbConn.getConn().close();
             System.out.println("Succesfully droped all tables");

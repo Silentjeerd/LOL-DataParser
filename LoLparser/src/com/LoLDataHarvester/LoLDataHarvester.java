@@ -1,6 +1,7 @@
 package com.LoLDataHarvester;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 
 public class LoLDataHarvester {
@@ -11,8 +12,8 @@ public class LoLDataHarvester {
     //private  static String[] tiers = {"DIAMOND"}; //Single tier voor test.
     //private  static String[] divisions = {"I"}; //Single bracket voor test.
 
-    public static void main(String[] args) throws IOException {
-        createDatabase db = new createDatabase("postgres", "!RappaR1964", "lolparserdata",5432, "localhost");
+    public static void main(String[] args) throws IOException, SQLException {
+        createDatabase db = new createDatabase("postgres", "postgres", "lolparserdata",5432, "localhost");
 
         /**
          * Section to start the data harvester

@@ -18,20 +18,23 @@ public class fillDatabase {
 
     public void run(){
         fillSummonerTable();
+        fillTeamDataTable();
         fillItemsTable();
         fillSpellsTable();
         fillChampionTable();
-        fillTeamDataTable();
         fillMatchHistoryTable();
         updateMatchHistoryTable();
-
         //fillChampionMasteryTable();
 
         /** niet nodig?
+         *
          *         //fillTeamTable();
          */
     }
 
+    /**
+     * function to fill the summonerTable
+     */
     private void fillSummonerTable(){
         // Select right url for array
         String csvUrl = "LoLparser/CSVs/AllPlayersWithIDs.csv";
@@ -115,7 +118,6 @@ public class fillDatabase {
             // Execute all sql statements
             stmt.executeBatch();
             dbConn.getConn().close();
-            System.out.println("Champion table filled");
 
         }catch(Exception e){
             e.printStackTrace();
@@ -125,7 +127,7 @@ public class fillDatabase {
     private void fillTeamDataTable(){
         String csvUrl = "LoLparser/CSVs/AllParticipantTeamData.csv";
 
-        String sql_INSERT = "INSERT INTO TEAMDATA" +
+        String sql_INSERT = "INSERT INTO teamData" +
                 "(MatchTeamID,MatchID,TeamID,Win,firstBloodTeam,firstRiftTeam," +
                 "countRift,firstBaronTeam,countBaron,firstDragonTeam,countDragon," +
                 "firstInhibitorTeam,countInhibitor,firstTowerTeam,countTower)" +
@@ -146,7 +148,7 @@ public class fillDatabase {
                 // This holds the data and we tell it to fill the columns and split them by ,
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
-                stmt.setFloat(1,Float.parseFloat(data[0]+data[1])); // MachtTeamID
+                stmt.setString(1,data[0]+data[1]); // MachtTeamID
                 stmt.setFloat(2,Float.parseFloat(data[0]));           // MatchID
                 stmt.setFloat(3,Float.parseFloat(data[1]));           // TeamID
                 stmt.setString(4,data[2]);                            // Win
@@ -170,13 +172,13 @@ public class fillDatabase {
             // Execute all sql statements
             stmt.executeBatch();
             dbConn.getConn().close();
-            System.out.println("TeamData table filled");
 
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
+    /*
     private void fillChampionMasteryTable(){
         String csvUrl = "LoLparser/CSVs/AllPlayerMasteries.csv";
 
@@ -201,7 +203,7 @@ public class fillDatabase {
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
                 stmt.setFloat(1,Float.parseFloat(data[0]));     // ChampionID
-                stmt.setFloat(2,Float.parseFloat(data[0]));     // AccountID
+                stmt.setFloat(2,Float.parseFloat(data[8]));     // AccountID
                 stmt.setFloat(3,Float.parseFloat(data[1]));     // Name
                 stmt.setString(4,data[2]);                      // Rank
                 stmt.setBoolean(5,parseBoolean(data[3]));       // Tier
@@ -220,12 +222,13 @@ public class fillDatabase {
             // Execute all sql statements
             stmt.executeBatch();
             dbConn.getConn().close();
-            System.out.println("ChampionMastery table filled");
 
         }catch(Exception e){
             e.printStackTrace();
         }
     }
+
+     */
 
     private void fillItemsTable(){
         String csvUrl = "LoLparser/CSVs/Items.csv";
@@ -248,7 +251,7 @@ public class fillDatabase {
                 // This holds the data and we tell it to fill the columns and split them by ,
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
-                stmt.setFloat(1,Float.parseFloat(data[0]));     // ItemID
+                stmt.setFloat(1,Float.parseFloat(data[0]));     // SpellID
                 stmt.setString(2,data[1]);                      // Name
 
                 // We will execute when all lines are read
@@ -325,12 +328,18 @@ public class fillDatabase {
                 // This holds the data and we tell it to fill the columns and split them by ,
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
-                stmt.setFloat(1,Float.parseFloat(data[1]));      // MatchID
-                stmt.setFloat(2,Float.parseFloat(data[3]));      // ChampionID
+                //stmt.setFloat(1,Float.parseFloat(data[1]));      // MatchID
+                String matchID = data[1].replace(".","").replace("E9","");;
+                while(matchID.length() != 10){
+                    matchID += "0";
+                }
+                Float matchIDfixed = new Float(matchID);
+                stmt.setFloat(1,matchIDfixed);
+                stmt.setFloat(2,Float.parseFloat(data[5]));      // ChampionID
                 stmt.setString(3,data[0]);                       // AccountID
-                stmt.setString(4,data[7]);                       // Lane
-                stmt.setString(5,data[2]);                       // Role
-                stmt.setString(6,data[4]);                       // Region
+                stmt.setString(4,data[7]);                       // Lane mist
+                stmt.setString(5,data[2]);                       // Role mist
+                stmt.setString(6,data[4]);                       // Region mist
 
                 // We will execute when all lines are read
                 stmt.addBatch();
@@ -340,7 +349,6 @@ public class fillDatabase {
             // Execute all sql statements
             stmt.executeBatch();
             dbConn.getConn().close();
-            System.out.println("MatchHistory table filled 1/2");
 
         }catch(Exception e){
             e.printStackTrace();
@@ -348,13 +356,13 @@ public class fillDatabase {
     }
 
     private void updateMatchHistoryTable(){
-        String csvUrl = "LoLparser/CSVs/AllParticipantData.csv";
+        String csvUrl = "LoLparser/CSVs/AllParticipantData.csv"; // AllParticipantData.csv
 
         String sql_UPDATE = "UPDATE MATCHHISTORY SET " +
                 "Spell1=?, Spell2=?, FirstBlood=?, FirstInhibitor=?, FirstTower=?," +
                 "GoldEarned=?,CreepKills=?,PlayerKills=?,PlayerAssists=?,Item0=?," +
                 "Item1=?,Item2=?,Item3=?,Item1=?,Item5=?,Item6=?" +
-                "WHERE MatchID = ? AND AccountID = ?";
+                "WHERE MatchID == ? AND AccountID == ?";
 
         dbConn.connectToDatabaseServer();
         try{
@@ -376,7 +384,7 @@ public class fillDatabase {
                 stmt.setBoolean(3,parseBoolean(data[7]));        // FirstBlood
                 stmt.setBoolean(4,parseBoolean(data[8]));       // FirstInhibitor
                 stmt.setBoolean(5,parseBoolean(data[9]));       // FirstTower
-                stmt.setFloat(6,Float.parseFloat(data[10]));    // GoldEarned
+                stmt.setFloat(6,Float.parseFloat(data[10]));     // GoldEarned
                 stmt.setFloat(7,Float.parseFloat(data[11]));    // CreepKills
                 stmt.setFloat(8,Float.parseFloat(data[12]));    // PlayerKills
                 stmt.setFloat(9,Float.parseFloat(data[14]));    // PlayerAssists
@@ -389,8 +397,8 @@ public class fillDatabase {
                 stmt.setFloat(16,Float.parseFloat(data[21]));    // Item6
 
                 // WHERE clause
-                stmt.setString(17,data[0]);                      // MatchID
-                stmt.setString(18,data[1]);                      // AccountID
+                stmt.setString(18,data[1]);                      // MatchID
+                stmt.setFloat(17,Float.parseFloat(data[0]));     // AccountID
 
                 // We will execute when all lines are read
                 stmt.addBatch();
@@ -400,7 +408,6 @@ public class fillDatabase {
             // Execute all sql statements
             stmt.executeBatch();
             dbConn.getConn().close();
-            System.out.println("MatchHistory table filled 2/2");
 
         }catch(Exception e){
             e.printStackTrace();
@@ -409,6 +416,7 @@ public class fillDatabase {
 
 
     //TODO test if needed or not
+    /*
     private void fillTeamTable(){
         String csvUrl = "AllParticipantTeamData";
 
@@ -449,4 +457,6 @@ public class fillDatabase {
             e.printStackTrace();
         }
     }
+
+     */
 }

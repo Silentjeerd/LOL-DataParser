@@ -50,12 +50,12 @@ public class queries {
         String sqlQuery = "SELECT * FROM " + table + " ORDER BY ??? "; //+ ordering;
         System.out.println(sqlQuery);
 
-        /*
+        query = "SELECT * FROM ITEM";
+
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next())
         {
             System.out.println(rs.getString(1));//or rs.getString("column name");
         }
-        */
     }
 }
