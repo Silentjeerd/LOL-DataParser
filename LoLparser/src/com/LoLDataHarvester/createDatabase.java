@@ -16,7 +16,9 @@ public class createDatabase {
             createChampionMasteryTable();
             createMatchHistoryTable();
             createTeamDataTable();
-            createTeamTable();
+            //createTeamTable();
+            createSpellTable();
+            createItemTable();
             System.out.println("Tables are made!");
         }else{
             System.out.println("Tables are already made!");
@@ -154,7 +156,6 @@ public class createDatabase {
         System.out.println("Succesfully created MatchHistoryTable");
     }
 
-    // TODO test sql code
     public void createTeamTable() {
         dbConn.connectToDatabaseServer();
         try {
@@ -205,6 +206,43 @@ public class createDatabase {
         System.out.println("Succesfully created TeamTable");
     }
 
+    public void createSpellTable() {
+        dbConn.connectToDatabaseServer();
+        try {
+            Statement stmt = dbConn.getConn().createStatement();
+            String sql = "CREATE TABLE SPELL " +
+                    "(" +
+                    " SpellID            INT PRIMARY KEY         , " +
+                    " Name               TEXT                      " +
+                    ") ";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            dbConn.getConn().close();
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        System.out.println("Succesfully created SpellTable");
+    }
+
+    public void createItemTable() {
+        dbConn.connectToDatabaseServer();
+        try {
+            Statement stmt = dbConn.getConn().createStatement();
+            String sql = "CREATE TABLE SPELL " +
+                    "(" +
+                    " ItemID             INT PRIMARY KEY         , " +
+                    " Name               TEXT                      " +
+                    ") ";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            dbConn.getConn().close();
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        System.out.println("Succesfully created Item");
+    }
+
+
     public void dropAllTables(){
         dbConn.connectToDatabaseServer();
         try {
@@ -227,7 +265,6 @@ public class createDatabase {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-
     }
 
 }
