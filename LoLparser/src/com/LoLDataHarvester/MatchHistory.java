@@ -1,8 +1,8 @@
 package com.LoLDataHarvester;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import org.json.JSONObject;
+
+import java.io.*;
 
 
 public class MatchHistory {
@@ -11,7 +11,6 @@ public class MatchHistory {
     private String apiKey,region;
 
     public MatchHistory( String[] divisions, String[] tiers, String apiKey,String region) {
-
         this.divisions = divisions;
         this.tiers = tiers;
         this.apiKey = apiKey;
@@ -42,13 +41,13 @@ public class MatchHistory {
                      String urlWhole = "https://" + region + ".api.riotgames.com/lol/match/v4/matchlists/by-account/" + summoner + "?queue=420&api_key=" + apiKey;
                      //haalt een subarray op.
                      String jsonString = parser.returnJsonStringFromUrl(urlWhole,"matches");
+                     JSONObject fixMatchIDs = new JSONObject(jsonString);
                      jsonString = jsonString.replace('"' + "gameId" +'"','"' + "accountId" + '"' + ':' + '"' + summoner + '"' + ',' + '"' + "gameId" +'"');
                      if(placeHolder == ""){
                          placeHolder = jsonString.substring(0,jsonString.length() -1);
                      }else{
                          placeHolder = placeHolder + "," + jsonString.substring(1,jsonString.length()-1);
                      }
-
                  }
                  tryCount = maxTries;
              }catch (Exception e){
@@ -67,4 +66,5 @@ public class MatchHistory {
             System.out.println("Failed to retrieve any match history");
         }
     }
+
 }

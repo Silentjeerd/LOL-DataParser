@@ -39,7 +39,7 @@ public class appendCSVs {
                         String accountID = parser.getAccountID(url); //haalt het accountID op van de summoner
                         fileWriter.write(line+","+accountID+lineSep); //maakt een nieuwe regel en schrijft deze in het nieuwe bestand.
                     }else{
-                        fileWriter.write(line+",/AccountID/SummonerLevel"+lineSep); //als het de eerste regel van de file is wordt er een nieuwe kolom ingevoegd.
+                        fileWriter.write(line+",/AccountID,/SummonerLevel"+lineSep); //als het de eerste regel van de file is wordt er een nieuwe kolom ingevoegd.
                     }
                     System.out.println("Done with: " + (i+1) + " out of " + lineCount); //print de progressie in je console.
                     tryCount = maxTries;

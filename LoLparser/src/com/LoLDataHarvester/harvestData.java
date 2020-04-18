@@ -32,8 +32,8 @@ public class harvestData {
         //getMatchHistoryByAccountID();
         //getChallengerData();
         //getMatchDataByID();
-        //getAllMasteries();
-        getChampions();
+        getAllMasteries();
+        //getChampions();
     }
 
     private void getChampions()throws IOException {

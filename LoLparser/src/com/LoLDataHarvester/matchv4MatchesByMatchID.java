@@ -138,6 +138,9 @@ public class matchv4MatchesByMatchID {
             String matchID = readerTokens[matchIDColumn].replace(".","").replace("E9","");
 
             if(count > 0){
+                while(matchID.length() != 10){
+                    matchID = matchID + "0";
+                }
                 if(matchID.length() == 9) matchID = matchID + "0";
                 if(!checkedMatches.contains(matchID)) checkedMatches.add(matchID);
             }
