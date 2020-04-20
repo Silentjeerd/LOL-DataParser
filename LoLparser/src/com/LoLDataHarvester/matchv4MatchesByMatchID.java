@@ -40,8 +40,18 @@ public class matchv4MatchesByMatchID {
         int teamId = object.getInt("teamId");
         String win = object.getString("win");
         boolean firstBlood = object.getBoolean("firstBlood");
-        boolean firstRift = object.getBoolean("firstRiftHerald");
-        int riftHeraldKills = object.getInt("riftHeraldKills");
+        boolean firstRift;
+        try{
+            firstRift = object.getBoolean("firstRiftHerald");
+        }catch (Exception e){
+            firstRift = false;
+        }
+        int riftHeraldKills;
+        try{
+            riftHeraldKills = object.getInt("riftHeraldKills");
+        }catch(Exception e){
+            riftHeraldKills = 0;
+        }
         boolean firstBaron = object.getBoolean("firstBaron");
         int baronKills = object.getInt("baronKills");
         boolean firstDragon = object.getBoolean("firstDragon");
@@ -136,15 +146,19 @@ public class matchv4MatchesByMatchID {
             readerTokens = readerLine.split(",");
 
             String matchID = readerTokens[matchIDColumn].replace(".","").replace("E9","");
+            matchID = matchID.replace(".","").replace("E8","");
 
             if(count > 0){
-                while(matchID.length() != 10){
+                while(matchID.length() < 10){
                     matchID = matchID + "0";
                 }
-                if(matchID.length() == 9) matchID = matchID + "0";
-                if(!checkedMatches.contains(matchID)) checkedMatches.add(matchID);
+                if(matchIDColumn == 1 && count % 50 == 0){
+                    if(!checkedMatches.contains(matchID)) checkedMatches.add(matchID);
+                }
+                if(matchIDColumn == 0){
+                    if(!checkedMatches.contains(matchID)) checkedMatches.add(matchID);
+                }
             }
-            System.out.println(count);
         }
 
         return checkedMatches;
@@ -181,19 +195,19 @@ public class matchv4MatchesByMatchID {
         }
 
         List<String> checkedMatches = getMatchList(fileToWrite2,0);
-        System.out.println(checkedMatches.size());
+        System.out.println("Check matches: " + checkedMatches.size());
         List<String> matchesToCheck = getMatchList(fileToGetAll,1);
-        System.out.println(matchesToCheck.size());
+        System.out.println("matches to check: " + matchesToCheck.size());
 
         matchesToCheck.removeAll(checkedMatches);
 
 
         int matchCount = matchesToCheck.size();
-        System.out.println(matchCount);
+        System.out.println("Matches remaining: " + matchCount);
 
         int counter = 0;
             for (String matchID:matchesToCheck) {
-
+            System.out.println(matchID);
 
                 int tryCount = 0;
                 int maxTries = 5;
@@ -241,6 +255,7 @@ public class matchv4MatchesByMatchID {
             }
 
             if(counter % 20 == 0){
+                System.out.println("Flushing");
                 fileWriter2.flush();
                 fileWriter3.flush();
                 fileWriter4.flush();

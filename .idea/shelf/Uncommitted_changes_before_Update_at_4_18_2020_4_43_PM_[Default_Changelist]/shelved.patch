@@ -1,0 +1,36 @@
+Index: LoLparser/src/com/LoLDataHarvester/LoLDataHarvester.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.LoLDataHarvester;\r\n\r\nimport java.io.IOException;\r\n\r\n\r\npublic class LoLDataHarvester {\r\n\r\n    private static String[] tiers = {\"DIAMOND\",\"PLATINUM\",\"GOLD\",\"SILVER\",\"BRONZE\",\"IRON\"}; //De tiers die beschikbaar zijn om te scannen.\r\n    private static String[] divisions = {\"I\",\"II\",\"III\",\"IV\"}; //De brackets die beschikbaar zijn om te scannen.\r\n\r\n    //private  static String[] tiers = {\"DIAMOND\"}; //Single tier voor test.\r\n    //private  static String[] divisions = {\"I\"}; //Single bracket voor test.\r\n\r\n    public static void main(String[] args) throws IOException {\r\n        //createDatabase db = new createDatabase(\"postgres\", \"****\", \"lolparserdata\",5432, \"localhost\");\r\n\r\n        /**\r\n         * Section to start the data harvester\r\n         */\r\n        harvestData harvester = new harvestData(\"RGAPI-3fd1aa73-1ab7-4311-a1fa-7813fe8c1cd9\",\"euw1\",tiers,divisions);\r\n        harvester.run();\r\n\r\n        /**\r\n         * Section to fill the database with collected database\r\n         */\r\n        //fillDatabase fillDB = new fillDatabase(db.getDbConn());\r\n        //fillDB.run();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- LoLparser/src/com/LoLDataHarvester/LoLDataHarvester.java	(revision 76c3c157933e8ef1a4d091382b3db6b6cc4f2e2f)
++++ LoLparser/src/com/LoLDataHarvester/LoLDataHarvester.java	(date 1587216220245)
+@@ -1,6 +1,7 @@
+ package com.LoLDataHarvester;
+ 
+ import java.io.IOException;
++import java.sql.SQLException;
+ 
+ 
+ public class LoLDataHarvester {
+@@ -11,13 +12,15 @@
+     //private  static String[] tiers = {"DIAMOND"}; //Single tier voor test.
+     //private  static String[] divisions = {"I"}; //Single bracket voor test.
+ 
+-    public static void main(String[] args) throws IOException {
+-        //createDatabase db = new createDatabase("postgres", "****", "lolparserdata",5432, "localhost");
++    public static void main(String[] args) throws IOException, SQLException {
++        createDatabase db = new createDatabase("postgres", "postgres", "lolparserdata",5432, "localhost");
+ 
++        queries watisdeze = new queries("postgres", "postgres", "lolparserdata",5432, "localhost");
++        watisdeze.getMeSomeData();
+         /**
+          * Section to start the data harvester
+          */
+-        harvestData harvester = new harvestData("RGAPI-3fd1aa73-1ab7-4311-a1fa-7813fe8c1cd9","euw1",tiers,divisions);
++        harvestData harvester = new harvestData("RGAPI-90d42e3f-1d36-47f4-903c-40fd5c3e9272","euw1",tiers,divisions);
+         harvester.run();
+ 
+         /**

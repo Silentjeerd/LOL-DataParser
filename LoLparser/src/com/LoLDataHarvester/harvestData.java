@@ -31,8 +31,8 @@ public class harvestData {
         //appendBracketsWithIDs();
         //getMatchHistoryByAccountID();
         //getChallengerData();
-        //getMatchDataByID();
-        getAllMasteries();
+        getMatchDataByID();
+        //getAllMasteries();
         //getChampions();
     }
 

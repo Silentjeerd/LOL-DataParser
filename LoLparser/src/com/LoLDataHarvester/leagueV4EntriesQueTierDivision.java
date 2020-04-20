@@ -49,6 +49,7 @@ public class leagueV4EntriesQueTierDivision {
                 }
             }
         }
+
         if(placeHolder != ""){
             placeHolder = placeHolder +"]";
             parser.generateCSVFromJString(placeHolder,outputFile);
