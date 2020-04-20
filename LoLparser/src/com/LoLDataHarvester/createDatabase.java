@@ -126,9 +126,10 @@ public class createDatabase {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE MATCHHISTORY " +
                     "(" +
-                    " MatchID           INT  PRIMARY KEY        , " +
+                    " MatchAccountID    TEXT  PRIMARY KEY     , " +
+                    " MatchID           BIGINT                  , " +
                     " ChampionID        INT  REFERENCES CHAMPION, " +
-                    " AccountID         TEXT REFERENCES SUMMONER, " +
+                    " AccountID         TEXT                    , " +
                     " Lane              TEXT            NOT NULL, " +
                     " Role              TEXT            NOT NULL, " +
                     " Region            TEXT            NOT NULL, " +
