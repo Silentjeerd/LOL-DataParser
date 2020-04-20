@@ -18,44 +18,34 @@ public class queries {
         this.dbConn = new databaseConnection(user, password, databaseName, port, ipAdress);
         dbConn.connectToDatabaseServer();
     }
+    /*
+        Lijst van tabellen.
+            CHAMPION
+            CHAMPIONMASTERY
+            MATCHHISTORY
+            SUMMONER
+            TEAMDATA
+            TEAM
+            ITEM
+            SPELL
+     */
+
 
     public void getMeSomeData() throws SQLException, IOException {
-        Statement stmt =dbConn.getConn().createStatement();
-        System.out.println("Geef je query op.");
-        Scanner scanner = new Scanner(System.in);
-        String query = scanner.nextLine();
-        String sql = "SELECT 3 * 5, 3 + 5 AS result";
+        Statement stmt = dbConn.getConn().createStatement();
 
-        String ordering;
-        String table;
-        boolean asc = false;
-        List<String> orderingDesc = Arrays.asList("*meest*","*most*");
-        List<String> orderingAsc = Arrays.asList("*minst*","*least*");
+        String query;
 
-        for (String check: orderingDesc) {
-            if(Pattern.compile(check).matcher(query).matches())
-                asc = true;
-        }
-
-        if(asc){
-            System.out.println("True");
-        }
-
-        if(query.contains("champion") || query.contains("champ")){
-            table = "CHAMPION";
-        }else{
-            table = "SUMMONER";
-        }
-
-        String sqlQuery = "SELECT * FROM " + table + " ORDER BY ??? "; //+ ordering;
-        System.out.println(sqlQuery);
-
-        query = "SELECT * FROM ITEM";
-
+        query = "SELECT * FROM ITEM WHERE ITEMID = 1001";
+        query = "SELECT * FROM CHAMPION ORDER BY ChampionID ASC";
+        query = "SELECT * FROM SPELL ORDER BY SpellID ASC";
+        query = "SELECT * FROM MATCHHISTORY";
+        //query = "SELECT * FROM SUMMONER";
+        System.out.println(query);
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next())
         {
-            System.out.println(rs.getString(1));//or rs.getString("column name");
+            System.out.println(rs.getString(1) + " " + rs.getString(2));//or rs.getString("column name");
         }
     }
 }

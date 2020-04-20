@@ -13,7 +13,8 @@ public class LoLDataHarvester {
     //private  static String[] divisions = {"I"}; //Single bracket voor test.
 
     public static void main(String[] args) throws IOException, SQLException {
-        createDatabase db = new createDatabase("postgres", "postgres", "lolparserdata",5432, "localhost");
+        //createDatabase db = new createDatabase("postgres", "postgres", "lolparserdata",5432, "localhost");
+
 
         /**
          * Section to start the data harvester
@@ -24,7 +25,9 @@ public class LoLDataHarvester {
         /**
          * Section to fill the database with collected database
          */
-        fillDatabase fillDB = new fillDatabase(db.getDbConn());
-        fillDB.run();
+        //fillDatabase fillDB = new fillDatabase(db.getDbConn());
+        //fillDB.run();
+        queries test = new queries("postgres", "postgres", "lolparserdata",5432, "localhost");
+        test.getMeSomeData();
     }
 }

@@ -290,7 +290,7 @@ public class fillDatabase {
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
                 stmt.setFloat(1,Float.parseFloat(data[0]));     // SpellID
-                stmt.setString(2,data[0]);                      // Name
+                stmt.setString(2,data[1]);                      // Name
 
                 // We will execute when all lines are read
                 stmt.addBatch();
