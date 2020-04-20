@@ -127,7 +127,7 @@ public class createDatabase {
             String sql = "CREATE TABLE MATCHHISTORY " +
                     "(" +
                     " MatchAccountID    TEXT  PRIMARY KEY     , " +
-                    " MatchID           BIGINT                  , " +
+                    " MatchID           TEXT                  , " +
                     " ChampionID        INT  REFERENCES CHAMPION, " +
                     " AccountID         TEXT                    , " +
                     " Lane              TEXT            NOT NULL, " +
@@ -165,7 +165,7 @@ public class createDatabase {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE TEAM " +
                     "(" +
-                    " MatchID       INT  REFERENCES MATCHHISTORY," +
+                    " MatchID       TEXT  REFERENCES MATCHHISTORY," +
                     " AccountID     TEXT REFERENCES SUMMONER    ," +
                     " ChampionID    INT  REFERENCES CHAMPION     " +
                     ") ";
@@ -185,7 +185,7 @@ public class createDatabase {
             String sql = "CREATE TABLE TEAMDATA " +
                     "(" +
                     " MatchTeamID        TEXT PRIMARY KEY         , " +
-                    " MatchID            BIGINT                     , " +
+                    " MatchID            TEXT                     , " +
                     " TeamID             INT                     , " +
                     " Win                TEXT                    , " +
                     " firstBloodTeam     BOOLEAN                 , " +
@@ -258,7 +258,7 @@ public class createDatabase {
             //String sql_team =               "DROP TABLE TEAM            CASCADE ";
             String sql_item =               "DROP TABLE ITEM            CASCADE ";
             stmt.executeUpdate(sql_item);
-            String sql_spell =               "DROP TABLE SPELL          CASCADE ";
+            String sql_spell =              "DROP TABLE SPELL          CASCADE ";
             stmt.executeUpdate(sql_spell);
             stmt.executeUpdate(sql_champion);
             stmt.executeUpdate(sql_championmastery);

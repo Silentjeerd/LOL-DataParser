@@ -36,16 +36,20 @@ public class queries {
 
         String query;
 
-        query = "SELECT * FROM ITEM WHERE ITEMID = 1001";
-        query = "SELECT * FROM CHAMPION ORDER BY ChampionID ASC";
-        query = "SELECT * FROM SPELL ORDER BY SpellID ASC";
-        query = "SELECT * FROM MATCHHISTORY";
+        //query = "SELECT * FROM ITEM WHERE ITEMID = 1001";
+        //query = "SELECT * FROM CHAMPION ORDER BY ChampionID ASC";
+        //query = "SELECT * FROM SPELL ORDER BY SpellID ASC";
+        //query = "SELECT * FROM MATCHHISTORY";
         //query = "SELECT * FROM SUMMONER";
+        query = "SELECT champion.name, count(MATCHHISTORY.championID) FROM champion, MATCHHISTORY where champion.championID = matchhistory.championid group by champion.name order by count(MATCHHISTORY.championID) desc fetch first 10 rows only";
         System.out.println(query);
         ResultSet rs = stmt.executeQuery(query);
+        int count = 0;
         while(rs.next())
         {
-            System.out.println(rs.getString(1) + " " + rs.getString(2));//or rs.getString("column name");
+
+            System.out.println(rs.getString(1) + " " + rs.getString(2));
+            //System.out.println(rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3)+ " " + rs.getString(4));//or rs.getString("column name");
         }
     }
 }
