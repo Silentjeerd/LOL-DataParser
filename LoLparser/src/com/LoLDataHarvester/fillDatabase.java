@@ -312,11 +312,10 @@ public class fillDatabase {
 
     private void fillMatchHistoryTable(){
         String csvUrl = "LoLparser/CSVs/AllMatchHistory.csv";
-
         String sql_INSERT = "INSERT INTO MATCHHISTORY" +
                 "(MatchAccountID,MatchID,ChampionID,AccountID,Lane,Role,Region)" +
                 "VALUES(?,?,?,?,?,?,?)"; // a ? is a placeholder we will fill later
-
+        int countLines = 0;
         dbConn.connectToDatabaseServer();
         try{
             // This statment we will fill with the right values
@@ -329,6 +328,7 @@ public class fillDatabase {
 
             // While the current line isnt null read csv line by line
             while((lineText = lineReader.readLine()) != null){
+                countLines++;
                 // This holds the data and we tell it to fill the columns and split them by ,
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
@@ -338,19 +338,22 @@ public class fillDatabase {
                 while(matchID.length() < 10){
                     matchID += "0";
                 }
+                String sloppyID = data[0].substring(1,data[0].length()-1);
+
                 stmt.setString(1,(matchID+data[5]));
                 stmt.setString(2,matchID);      // MatchID
                 stmt.setFloat(3,Float.parseFloat(data[5]));      // ChampionID
-                stmt.setString(4,data[0]);                       // AccountID
+                stmt.setString(4,sloppyID);                       // AccountID
                 stmt.setString(5,data[7]);                       // Lane
                 stmt.setString(6,data[2]);                       // Role
                 stmt.setString(7,data[4]);                       // Region
                 // We will execute when all lines are read
-                stmt.addBatch();
+                if(countLines % 50 == 0 && countLines > 0)
+                    stmt.addBatch();
             }
 
             lineReader.close();
-            // Execute all sql statements
+            //Execute all sql statements
             stmt.executeBatch();
             dbConn.getConn().close();
             System.out.println("MatchHistory table filled, database closed 1/2");
@@ -367,7 +370,7 @@ public class fillDatabase {
                 "GoldEarned=?,CreepKills=?,PlayerKills=?,PlayerAssists=?,Item0=?," +
                 "Item1=?,Item2=?,Item3=?,Item4=?,Item5=?,Item6=?" +
                 "WHERE MatchID = ? AND AccountID = ?";
-
+        int count = 0;
         dbConn.connectToDatabaseServer();
         try{
             // This statment we will fill with the right values
@@ -382,6 +385,7 @@ public class fillDatabase {
                 // This holds the data and we tell it to fill the columns and split them by ,
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
+
                 stmt.setFloat(1,Float.parseFloat(data[5]));      // Spell1
                 stmt.setFloat(2,Float.parseFloat(data[6]));      // Spell2
                 stmt.setBoolean(3,parseBoolean(data[7]));        // FirstBlood
@@ -398,7 +402,6 @@ public class fillDatabase {
                 stmt.setFloat(14,Float.parseFloat(data[19]));    // Item4
                 stmt.setFloat(15,Float.parseFloat(data[20]));    // Item5
                 stmt.setFloat(16,Float.parseFloat(data[21]));    // Item6
-                System.out.println(data[7]);
 
                 // WHERE clause
                 String matchID = data[0].replace(".","").replace("E9","");
@@ -406,20 +409,20 @@ public class fillDatabase {
                 while(matchID.length() < 10){
                     matchID += "0";
                 }
-                System.out.println(matchID);
-                System.out.println(data[1]);
+
                 stmt.setString(17,matchID);     // MatchID
                 stmt.setString(18,data[1]);     // AccountID
 
 
                 // We will execute when all lines are read
+                stmt.executeUpdate();
+                System.out.println(count++);
                 //stmt.addBatch();
-                stmt.executeBatch();
             }
 
             lineReader.close();
             // Execute all sql statements
-
+            //stmt.executeBatch();
             dbConn.getConn().close();
             System.out.println("MatchHistory table filled, database closed 2/2");
         }catch(Exception e){

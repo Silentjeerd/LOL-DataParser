@@ -133,22 +133,22 @@ public class createDatabase {
                     " Lane              TEXT            NOT NULL, " +
                     " Role              TEXT            NOT NULL, " +
                     " Region            TEXT            NOT NULL, " +
-                    " Spell1            TEXT                    , " +
-                    " Spell2            TEXT                    , " +
-                    " FirstBlood        TEXT                    , " +
-                    " FirstInhibitor    TEXT                    , " +
-                    " FirstTower        TEXT                    , " +
-                    " GoldEarned        TEXT                    , " +
-                    " CreepKills        TEXT                    , " +
-                    " PlayerKills       TEXT                    , " +
-                    " PlayerAssists     TEXT                    , " +
-                    " Item0             TEXT                    , " +
-                    " Item1             TEXT                    , " +
-                    " Item2             TEXT                    , " +
-                    " Item3             TEXT                    , " +
-                    " Item4             TEXT                    , " +
-                    " Item5             TEXT                    , " +
-                    " Item6             TEXT                      " +
+                    " Spell1            INT                    , " +
+                    " Spell2            INT                     , " +
+                    " FirstBlood        BOOLEAN                    , " +
+                    " FirstInhibitor    BOOLEAN                    , " +
+                    " FirstTower        BOOLEAN                    , " +
+                    " GoldEarned        INT                     , " +
+                    " CreepKills        INT                     , " +
+                    " PlayerKills       INT                     , " +
+                    " PlayerAssists     INT                     , " +
+                    " Item0             INT                     , " +
+                    " Item1             INT                     , " +
+                    " Item2             INT                     , " +
+                    " Item3             INT                     , " +
+                    " Item4             INT                     , " +
+                    " Item5             INT                     , " +
+                    " Item6             INT                       " +
                     ") ";
             stmt.executeUpdate(sql);
             stmt.close();
