@@ -21,7 +21,7 @@ public class createDatabase {
             createChampionMasteryTable();
             createMatchHistoryTable();
             createTeamDataTable();
-            //createTeamTable();
+            createBansTable();
             createSpellTable();
             createItemTable();
             System.out.println("Tables are made!");
@@ -98,19 +98,16 @@ public class createDatabase {
             String sql = "CREATE TABLE CHAMPIONMASTERY " +
                     "(" +
                     "PRIMARY KEY (ChampionID,AccountID)," +
-                    " ChampionID        INT  REFERENCES CHAMPION," +
-                    " AccountID         TEXT REFERENCES SUMMONER, " +
-                    " Name              TEXT            NOT NULL, " +
-                    " Rank              TEXT            NOT NULL, " +
-                    " Tier              TEXT            NOT NULL, " +
-                    " SummonerLevel     INT             NOT NULL, " +
-                    " LeaguePoints      INT             NOT NULL, " +
-                    " TotalGamesPlayed  INT             NOT NULL, " +
-                    " Wins              INT             NOT NULL, " +
-                    " Losses            INT             NOT NULL, " +
-                    " Veteran           BOOLEAN                 , " +
-                    " FreshBlood        BOOLEAN                 " +
-                    ") ";
+                    " ChampionID                        INT  REFERENCES CHAMPION, " +
+                    " AccountID                         TEXT                    , " +
+                    " chestGranted                      BOOLEAN                 , " +
+                    " championLevel                     INT                     , " +
+                    " championPoints                    INT                     , " +
+                    " championPointsSinceLastLevel      INT                     , " +
+                    " championPointsUntilNextLevel      INT                     , " +
+                    " tokensEarned                      INT                     , " +
+                    " lastPlayTime                      DECIMAL                   " +
+                    ")";
             stmt.executeUpdate(sql);
             stmt.close();
             dbConn.getConn().close();
@@ -126,18 +123,18 @@ public class createDatabase {
             Statement stmt = dbConn.getConn().createStatement();
             String sql = "CREATE TABLE MATCHHISTORY " +
                     "(" +
-                    " MatchAccountID    TEXT  PRIMARY KEY     , " +
-                    " MatchID           TEXT                  , " +
+                    " MatchAccountID    TEXT  PRIMARY KEY       , " +
+                    " MatchID           TEXT                    , " +
                     " ChampionID        INT  REFERENCES CHAMPION, " +
                     " AccountID         TEXT                    , " +
                     " Lane              TEXT            NOT NULL, " +
                     " Role              TEXT            NOT NULL, " +
                     " Region            TEXT            NOT NULL, " +
-                    " Spell1            INT                    , " +
+                    " Spell1            INT                     , " +
                     " Spell2            INT                     , " +
-                    " FirstBlood        BOOLEAN                    , " +
-                    " FirstInhibitor    BOOLEAN                    , " +
-                    " FirstTower        BOOLEAN                    , " +
+                    " FirstBlood        BOOLEAN                 , " +
+                    " FirstInhibitor    BOOLEAN                 , " +
+                    " FirstTower        BOOLEAN                 , " +
                     " GoldEarned        INT                     , " +
                     " CreepKills        INT                     , " +
                     " PlayerKills       INT                     , " +
@@ -148,7 +145,8 @@ public class createDatabase {
                     " Item3             INT                     , " +
                     " Item4             INT                     , " +
                     " Item5             INT                     , " +
-                    " Item6             INT                       " +
+                    " Item6             INT                     , " +
+                    " VisionScore       INT                       " +
                     ") ";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -157,25 +155,6 @@ public class createDatabase {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
         System.out.println("Succesfully created MatchHistoryTable");
-    }
-
-    public void createTeamTable() {
-        dbConn.connectToDatabaseServer();
-        try {
-            Statement stmt = dbConn.getConn().createStatement();
-            String sql = "CREATE TABLE TEAM " +
-                    "(" +
-                    " MatchID       TEXT  REFERENCES MATCHHISTORY," +
-                    " AccountID     TEXT REFERENCES SUMMONER    ," +
-                    " ChampionID    INT  REFERENCES CHAMPION     " +
-                    ") ";
-            stmt.executeUpdate(sql);
-            stmt.close();
-            dbConn.getConn().close();
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        System.out.println("Succesfully created TeamTable");
     }
 
     public void createTeamDataTable() {
@@ -245,6 +224,24 @@ public class createDatabase {
         System.out.println("Succesfully created Item");
     }
 
+    public void createBansTable() {
+        dbConn.connectToDatabaseServer();
+        try {
+            Statement stmt = dbConn.getConn().createStatement();
+            String sql = "CREATE TABLE BANS " +
+                    "(" +
+                    " ID                  INT PRIMARY KEY              , " +
+                    " MatchID             DECIMAL                      , " +
+                    " BannedChampion      INT REFERENCES CHAMPION        " +
+                    ") ";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            dbConn.getConn().close();
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        System.out.println("Succesfully created Item");
+    }
 
     public void dropAllTables(){
         dbConn.connectToDatabaseServer();
@@ -255,10 +252,11 @@ public class createDatabase {
             String sql_matchhistory =       "DROP TABLE MATCHHISTORY    CASCADE ";
             String sql_summoner =           "DROP TABLE SUMMONER        CASCADE ";
             String sql_teamdata =           "DROP TABLE TEAMDATA        CASCADE ";
-            //String sql_team =               "DROP TABLE TEAM            CASCADE ";
             String sql_item =               "DROP TABLE ITEM            CASCADE ";
+            String sql_ban =                "DROP TABLE BANS            CASCADE ";
+            String sql_spell =              "DROP TABLE SPELL           CASCADE ";
+            stmt.executeUpdate(sql_ban);
             stmt.executeUpdate(sql_item);
-            String sql_spell =              "DROP TABLE SPELL          CASCADE ";
             stmt.executeUpdate(sql_spell);
             stmt.executeUpdate(sql_champion);
             stmt.executeUpdate(sql_championmastery);

@@ -14,8 +14,8 @@ public class queries {
 
     private databaseConnection dbConn;
 
-    public queries(String user, String password, String databaseName , int port, String ipAdress){
-        this.dbConn = new databaseConnection(user, password, databaseName, port, ipAdress);
+    public queries(databaseConnection db){
+        this.dbConn = db;
         dbConn.connectToDatabaseServer();
     }
     /*
