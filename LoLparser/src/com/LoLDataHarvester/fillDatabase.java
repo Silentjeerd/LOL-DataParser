@@ -124,10 +124,10 @@ public class fillDatabase {
         String csvUrl = "LoLparser/CSVs/AllParticipantTeamData.csv";
 
         String sql_INSERT = "INSERT INTO teamData" +
-                "(MatchTeamID,MatchID,TeamID,Win,firstBloodTeam,firstRiftTeam," +
+                "(MatchTeamID,MatchID,TeamID,Win,MatchDuration,firstBloodTeam,firstRiftTeam," +
                 "countRift,firstBaronTeam,countBaron,firstDragonTeam,countDragon," +
                 "firstInhibitorTeam,countInhibitor,firstTowerTeam,countTower)" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; // a ? is a placeholder we will fill later
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; // a ? is a placeholder we will fill later
 
         dbConn.connectToDatabaseServer();
         try{
@@ -154,17 +154,18 @@ public class fillDatabase {
                 stmt.setString(2,matchID);           // MatchID
                 stmt.setFloat(3,Float.parseFloat(data[1]));           // TeamID
                 stmt.setString(4,data[2]);                            // Win
-                stmt.setBoolean(5,parseBoolean(data[3]));             // firstBloodTeam
-                stmt.setBoolean(6,parseBoolean(data[4]));             // firstRiftTeam
-                stmt.setFloat(7,Float.parseFloat(data[5]));           // countRift
-                stmt.setBoolean(8,parseBoolean(data[6]));             // firstBaronTeam
-                stmt.setFloat(9,Float.parseFloat(data[7]));           // countBaron
-                stmt.setBoolean(10,parseBoolean(data[8]));            // firstDragonTeam
-                stmt.setFloat(11,Float.parseFloat(data[9]));          // countDragon
-                stmt.setBoolean(12,parseBoolean(data[10]));           // firstInhibitorTeam
-                stmt.setFloat(13,Float.parseFloat(data[11]));         // countInhibitor
-                stmt.setBoolean(14,parseBoolean(data[12]));           // firstTowerTeam
-                stmt.setFloat(15,Float.parseFloat(data[13]));         // countTower
+                stmt.setFloat(5,Float.parseFloat(data[14])/60);    // MatchDuration Seconds
+                stmt.setBoolean(6,parseBoolean(data[3]));             // firstBloodTeam
+                stmt.setBoolean(7,parseBoolean(data[4]));             // firstRiftTeam
+                stmt.setFloat(8,Float.parseFloat(data[5]));           // countRift
+                stmt.setBoolean(9,parseBoolean(data[6]));             // firstBaronTeam
+                stmt.setFloat(10,Float.parseFloat(data[7]));           // countBaron
+                stmt.setBoolean(11,parseBoolean(data[8]));            // firstDragonTeam
+                stmt.setFloat(12,Float.parseFloat(data[9]));          // countDragon
+                stmt.setBoolean(13,parseBoolean(data[10]));           // firstInhibitorTeam
+                stmt.setFloat(14,Float.parseFloat(data[11]));         // countInhibitor
+                stmt.setBoolean(15,parseBoolean(data[12]));           // firstTowerTeam
+                stmt.setFloat(16,Float.parseFloat(data[13]));         // countTower
 
                 // We will execute when all lines are read
                 stmt.addBatch();
@@ -361,7 +362,7 @@ public class fillDatabase {
         String sql_UPDATE = "UPDATE MATCHHISTORY SET " +
                 "Spell1=?, Spell2=?, FirstBlood=?, FirstInhibitor=?, FirstTower=?," +
                 "GoldEarned=?,CreepKills=?,PlayerKills=?,PlayerAssists=?,Item0=?," +
-                "Item1=?,Item2=?,Item3=?,Item4=?,Item5=?,Item6=?, visionScore=?" +
+                "Item1=?,Item2=?,Item3=?,Item4=?,Item5=?,Item6=?, visionScore=?, TeamID=?" +
                 "WHERE MatchID = ? AND AccountID = ?";
         int count = 0;
         dbConn.connectToDatabaseServer();
@@ -396,6 +397,7 @@ public class fillDatabase {
                 stmt.setFloat(15,Float.parseFloat(data[20]));    // Item5
                 stmt.setFloat(16,Float.parseFloat(data[21]));    // Item6
                 stmt.setFloat(17,Float.parseFloat(data[22]));    // VisionScore
+                stmt.setFloat(18,Float.parseFloat(data[4]));     // TeamID
 
                 String matchID = data[0].replace(".","").replace("E9","");
                 matchID = matchID.replace(".","").replace("E8","");
@@ -404,8 +406,8 @@ public class fillDatabase {
                 }
 
                 // WHERE clause
-                stmt.setString(18,matchID);     // MatchID
-                stmt.setString(19,data[1]);     // AccountID
+                stmt.setString(19,matchID);     // MatchID
+                stmt.setString(20,data[1]);     // AccountID
 
                 // We will execute when all lines are read
                 System.out.println(count++);
@@ -448,8 +450,15 @@ public class fillDatabase {
                 String[] data = lineText.split(",");
                 // Put the right csv value with te right placeholder
                 count++;
-                stmt.setFloat(1,count);      // matchID
-                stmt.setFloat(2,Float.parseFloat(data[0]));      // matchID
+                stmt.setFloat(1,count);      // ID
+
+                String matchID = data[0].replace(".","").replace("E9","");
+                matchID = matchID.replace(".","").replace("E8","");
+                while(matchID.length() < 10){
+                    matchID += "0";
+                }
+                stmt.setString(2,matchID);      // matchID
+
                 float champID;
                 if(Float.parseFloat(data[1]) == -1.0){ champID = 0; }else{champID = Float.parseFloat(data[1]);}
                 stmt.setFloat(3,champID);      // bannedChampions

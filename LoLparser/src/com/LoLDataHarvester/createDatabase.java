@@ -130,6 +130,7 @@ public class createDatabase {
                     " Lane              TEXT            NOT NULL, " +
                     " Role              TEXT            NOT NULL, " +
                     " Region            TEXT            NOT NULL, " +
+                    " TeamID            INT                     , " +
                     " Spell1            INT                     , " +
                     " Spell2            INT                     , " +
                     " FirstBlood        BOOLEAN                 , " +
@@ -167,6 +168,7 @@ public class createDatabase {
                     " MatchID            TEXT                     , " +
                     " TeamID             INT                     , " +
                     " Win                TEXT                    , " +
+                    " MatchDuration      INT                     , " +
                     " firstBloodTeam     BOOLEAN                 , " +
                     " firstRiftTeam      BOOLEAN                 , " +
                     " countRift          INT                     , " +
@@ -231,7 +233,7 @@ public class createDatabase {
             String sql = "CREATE TABLE BANS " +
                     "(" +
                     " ID                  INT PRIMARY KEY              , " +
-                    " MatchID             DECIMAL                      , " +
+                    " MatchID             TEXT                      , " +
                     " BannedChampion      INT REFERENCES CHAMPION        " +
                     ") ";
             stmt.executeUpdate(sql);
