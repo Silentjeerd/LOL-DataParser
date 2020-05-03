@@ -38,7 +38,7 @@ public class createDatabase {
         dbConn.connectToDatabaseServer();
         try{
             Statement stmt =dbConn.getConn().createStatement();
-            String sql = "SELECT * FROM CHAMPION";
+            String sql = "SELECT * FROM BANS";
             ResultSet rs = stmt.executeQuery(sql);
             return true;
         }catch (Exception e){
@@ -240,7 +240,7 @@ public class createDatabase {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-        System.out.println("Succesfully created Item");
+        System.out.println("Succesfully created Bans");
     }
 
     public void dropAllTables(){

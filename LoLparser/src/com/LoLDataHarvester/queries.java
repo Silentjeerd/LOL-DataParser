@@ -43,7 +43,7 @@ public class queries {
         query = "SELECT * FROM MATCHHISTORY WHERE AccountID = '20VITQtkdhDPhj4phneOY0NWmpYHQWh-wVwzJeS-OIPXrrU'";
         // INSERT INTO SUMMONER" +
         //                "(AccountID,SummonerID,Name
-        //query = "SELECT champion.name, count(MATCHHISTORY.championID) FROM champion, MATCHHISTORY where champion.championID = matchhistory.championid group by champion.name order by count(MATCHHISTORY.championID) desc fetch first 10 rows only";
+        query = "SELECT champion.name, count(MATCHHISTORY.championID) FROM champion, MATCHHISTORY where champion.championID = matchhistory.championid group by champion.name order by count(MATCHHISTORY.championID) desc fetch first 10 rows only";
         //query = "SELECT * FROM MATCHHISTORY FETCH FIRST ROW ONLY";
         //query = "SELECT ACCOUNTID FROM Summoner";
         System.out.println(query);

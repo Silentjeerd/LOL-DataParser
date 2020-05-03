@@ -1,0 +1,205 @@
+
+```{r}
+# install.packages("RPostgreSQL")
+require("RPostgreSQL")
+library(tibble)
+# create a connection
+# save the password that we can "hide" it as best as we can by collapsing it
+
+ 
+# loads the PostgreSQL driver
+drv <- dbDriver("PostgreSQL")
+# creates a connection to the postgres database
+# note that "con" will be used later in each connection to the database
+connectDB <- function(user,password){
+  host <- "localhost"
+  dbName <- "lolparserdata"    #name of database 
+  port <- 5432                 #port of database server 
+  
+  driver <- dbDriver("PostgreSQL")
+  conn <- dbConnect(driver, dbname = dbName, host = host, port = port, user = user,password =  password)
+}
+# query the data from postgreSQL 
+
+
+```
+
+
+```{r}
+
+con <- connectDB("postgres","postgres")
+#Top 10 picked champions.
+
+df_postgres <- dbGetQuery(con, "SELECT champion.name as Name, count(MATCHHISTORY.championID) as Count FROM champion, MATCHHISTORY where champion.championID = matchhistory.championid group by champion.name order by Count desc Fetch first 3 rows only")
+
+
+as_tibble(df_postgres)
+
+df_postgres <- dbGetQuery(con, "SELECT * FROM SUMMONER")
+
+as_tibble(df_postgres)
+
+dbDisconnect(con)
+
+```
+
+
+```{r}
+
+con <- connectDB("postgres","postgres")
+#RANK MODIFIER
+
+
+df_postgres <- dbGetQuery(con, 'SELECT tier, CONCAT(CASE tier
+                          WHEN cast(\'"DIAMOND"\' as varchar) THEN 1
+                          WHEN cast(\'"PLATINUM"\' as varchar) THEN 2
+                          WHEN cast(\'"GOLD"\' as varchar) THEN 3
+                          WHEN cast(\'"SILVER"\' as varchar) THEN 4
+                          WHEN cast(\'"BRONZE"\' as varchar) THEN 5
+                          WHEN cast(\'"IRON"\' as varchar) THEN 6
+                          ELSE 0
+                          END , CASE rank
+                          WHEN cast(\'"I"\' as varchar) THEN 1
+                          WHEN cast(\'"II"\' as varchar) THEN 2
+                          WHEN cast(\'"III"\' as varchar) THEN 3
+                          WHEN cast(\'"IV"\' as varchar) THEN 4
+                          ELSE 0
+                          END)
+                          AS RANK
+                          FROM SUMMONER')
+
+
+as_tibble(df_postgres)
+
+dbDisconnect(con)
+```
+
+```{r}
+con <- connectDB("postgres","postgres")
+#Banned Champions with their banrates.
+
+df_postgres <- dbGetQuery(con, "SELECT champion.name as Name, 
+                          count(bans.bannedchampion) as Count, 
+                          count(bans.bannedchampion) / 
+                          (SELECT count(bannedchampion)/1000 FROM bans) as banrate
+                          
+                          FROM champion, bans where champion.championID = bans.bannedchampion 
+                          GROUP BY champion.name 
+                          ORDER BY Count DESC 
+                          Fetch first 10 rows only")
+
+as_tibble(df_postgres)
+
+df_postgres <- dbGetQuery(con, "SELECT count(bans.bannedchampion) as Count FROM bans")
+
+as_tibble(df_postgres)
+
+dbDisconnect(con)
+```
+
+```{r}
+dbDisconnect(con)
+con <- connectDB("postgres","postgres")
+#Top 3 picked champions.
+
+df_postgres <- dbGetQuery(con, "SELECT S.TIER, S.RANK, AVG(S.TOTALGAMESPLAYED) FROM MATCHHISTORY MH, SUMMONER S WHERE MH.ACCOUNTID = S.ACCOUNTID GROUP BY S.TIER, S.RANK ORDER BY TIER ASC, RANK ASC")
+
+
+as_tibble(df_postgres)
+```
+
+```{r}
+dbDisconnect(con)
+con <- connectDB("postgres","postgres")
+#Top 3 picked champions.
+
+df_postgres <- dbGetQuery(con, "SELECT S.TIER, S.RANK FROM MATCHHISTORY MH, SUMMONER S WHERE MH.ACCOUNTID = S.ACCOUNTID GROUP BY S.TIER, S.RANK ORDER BY TIER ASC, RANK ASC")
+
+
+as_tibble(df_postgres)
+```
+
+
+```{r}
+dbDisconnect(con)
+con <- connectDB("postgres","postgres")
+#Chosen spells count.
+
+df_postgres <- dbGetQuery(con, "SELECT S.spellid as ID, s.name as name , 
+                          (SELECT COUNT(SPELL1) FROM MATCHHISTORY WHERE S.spellid = SPELL1 
+                          FETCH FIRST ROW ONLY) +
+                          (SELECT COUNT(SPELL2) FROM MATCHHISTORY WHERE S.spellid = SPELL2 
+                          FETCH FIRST ROW ONLY) as Count,
+                          ((SELECT COUNT(SPELL1) FROM MATCHHISTORY WHERE S.spellid = SPELL1 
+                          FETCH FIRST ROW ONLY) +
+                          (SELECT COUNT(SPELL2) FROM MATCHHISTORY WHERE S.spellid = SPELL2 
+                          FETCH FIRST ROW ONLY))/
+                          (SELECT (COUNT(SPELL1)+COUNT(SPELL2))/200 FROM MATCHHISTORY) as totalspells
+                          FROM SPELL S ORDER BY count DESC")
+
+as_tibble(df_postgres)
+
+df_postgres <- dbGetQuery(con, "SELECT * FROM matchhistory")
+
+as_tibble(df_postgres)
+```
+
+TOP 10 most and least bought items.
+```{r}
+con <- connectDB("postgres","postgres")
+#Top 10 most/least bought items.
+
+df_postgres <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name , 
+                          (SELECT COUNT(ITEM0) FROM MATCHHISTORY WHERE I.ITEMID = ITEM0 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM1) FROM MATCHHISTORY WHERE I.ITEMID = ITEM1 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM2) FROM MATCHHISTORY WHERE I.ITEMID = ITEM2 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM3) FROM MATCHHISTORY WHERE I.ITEMID = ITEM3 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM4) FROM MATCHHISTORY WHERE I.ITEMID = ITEM4 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM5) FROM MATCHHISTORY WHERE I.ITEMID = ITEM5 FETCH FIRST ROW ONLY)                            as Count 
+                          FROM ITEM I ORDER BY count DESC FETCH FIRST 10 ROWS ONLY")
+
+as_tibble(df_postgres)
+
+df_postgres <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name , 
+                          (SELECT COUNT(ITEM0) FROM MATCHHISTORY WHERE I.ITEMID = ITEM0 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM1) FROM MATCHHISTORY WHERE I.ITEMID = ITEM1 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM2) FROM MATCHHISTORY WHERE I.ITEMID = ITEM2 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM3) FROM MATCHHISTORY WHERE I.ITEMID = ITEM3 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM4) FROM MATCHHISTORY WHERE I.ITEMID = ITEM4 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM5) FROM MATCHHISTORY WHERE I.ITEMID = ITEM5 FETCH FIRST ROW ONLY)                            as count 
+                          FROM ITEM I ORDER BY count ASC FETCH FIRST 10 ROWS ONLY")
+
+as_tibble(df_postgres)
+dbDisconnect(con)
+```
+
+RANK MODIFIER
+
+```{r}
+con <- connectDB("postgres","postgres")
+#RANK MODIFIER
+
+
+df_postgres <- dbGetQuery(con, 'SELECT tier, CONCAT(CASE tier
+                          WHEN cast(\'"DIAMOND"\' as varchar) THEN 1
+                          WHEN cast(\'"PLATINUM"\' as varchar) THEN 2
+                          WHEN cast(\'"GOLD"\' as varchar) THEN 3
+                          WHEN cast(\'"SILVER"\' as varchar) THEN 4
+                          WHEN cast(\'"BRONZE"\' as varchar) THEN 5
+                          WHEN cast(\'"IRON"\' as varchar) THEN 6
+                          ELSE 0
+                          END , CASE rank
+                          WHEN cast(\'"I"\' as varchar) THEN 1
+                          WHEN cast(\'"II"\' as varchar) THEN 2
+                          WHEN cast(\'"III"\' as varchar) THEN 3
+                          WHEN cast(\'"IV"\' as varchar) THEN 4
+                          ELSE 0
+                          END)
+                          AS RANK
+                          FROM SUMMONER')
+
+
+as_tibble(df_postgres)
+
+dbDisconnect(con)
+```
