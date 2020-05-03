@@ -1,11 +1,16 @@
+---
+title: "Visualisatie League of Legends Data"
+author: 'Maurice Ponte, Tjeerd van Gelder, Chris-Jan Borgers, Albert Berends'
+output: pdf_document
+---
+# Data & Required packages.
+In deze blok defineren we de benodigde connectie met de database. Deze is opgezet in Postgresql en word aangevuld met data door de, in java geschreven, parser. Hier kunnen ook de parametes worden aangepast om de database te bereiken. (Port etc)
 
 ```{r}
 # install.packages("RPostgreSQL")
 require("RPostgreSQL")
 library(tibble)
 # create a connection
-# save the password that we can "hide" it as best as we can by collapsing it
-
  
 # loads the PostgreSQL driver
 drv <- dbDriver("PostgreSQL")
@@ -19,23 +24,98 @@ connectDB <- function(user,password){
   driver <- dbDriver("PostgreSQL")
   conn <- dbConnect(driver, dbname = dbName, host = host, port = port, user = user,password =  password)
 }
-# query the data from postgreSQL 
 
+username <- "postgres"
+password <- "!RappaR1964"
 
 ```
 
+# Inleiding 
+In dit bestand gaan we de vragen beantwoord die in de plan van aanpak worden beschreven. Welke vragen willen we beantwoorden met deze database?
+
+1. What statistics do highest ranked players have in common?
+
+2. Can we use these statistics to identify “smurf” in the lower ranks?
+
+3. Which champion is banned the most in tournament/ brackets(ranks)?
+
+4. Which champion has the highest win rate in tournament/ brackets(ranks)?
+
+5. Does getting “First Blood” increase the odds of winning a match?
+
+6. Is a high champion mastery (onetrick) relate to a high rank?
+
+7. Is there an increased rate in of certain champion picks when they are in free rotation? (may also be able to connect data with new “smurf” accounts)
+
+8. What are the most recurring stats when it comes to wins?
+
+9. What region has the most successful players (highest rank)?
+
+10. Does the average vision-score/map-awareness6 increase per bracket?
+
+11. How long does an average game last per bracket?
+
+12. Does the average amount of deaths decrease per bracket?
+
+13. What is the most used summoner spell combo?
+
+14. What is the least used summoner spell combo?
+
+15. What are the top 5 most bought items.
+
+16. What are the top 5 least bought items.
+
+*Voor meer informatie en uitleg van deze vragen, zie plan van aanpak.
+
+#Vraag 5: Does getting “First Blood” increase the odds of winning a match?
+```{r}
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con,"SELECT COUNT(T.matchteamid) as aantal, T.WIN, T.firstbloodteam FROM teamdata T GROUP BY T.WIN,T.firstbloodteam")
+dbDisconnect(con)
+```
 
 ```{r}
+qResultTotal <- qResult[1,1] + qResult[2,1] + qResult[3,1] + qResult[4,1]
 
-con <- connectDB("postgres","postgres")
+#Percentages berekenen 
+pWT <- (qResult[3,1] / qResultTotal) * 100 # Win and FirstBlood
+pWF <- (qResult[2,1] / qResultTotal) * 100 # Win and no FirstBlood
+
+
+#Plot data 
+slices <- c(pWT,pWF)
+lbls <- c("1.Win and FirstBlood","2.Win and No FirstBlood")
+
+barplot(slices,names.arg = lbls, legend = lbls, col = c("red","green"))
+
+printP <- function(){
+cat("Percentage van wins met FirstBlood: ")
+cat(pWT) 
+cat(" % \n")
+cat("Percentage van wins met zonder FirstBlood: ")
+cat(pWF)
+cat(" % \n")
+cat("Verschil: ")
+cat(pWT-pWF)
+cat(" % \n")
+}
+printP()
+
+```
+#Conclusie vraag 5
+
+We zien in de geplotte data, een minimaal verschil in de percentages van Wins met en zonder FirstBlood
+het verschil is dan ook 8%. Dit betekend niet dat er letterlijk 8% meer kans is op winst bij het behalen van firstBlood. Het zegt enkel dat bij de gewonnen matches er 8% vaker is gewonnen met FirstBlood dan zonder.
+
+
+
+#Vraag 
+```{r}
+
+con <- connectDB(username, password)
 #Top 10 picked champions.
 
-df_postgres <- dbGetQuery(con, "SELECT champion.name as Name, count(MATCHHISTORY.championID) as Count FROM champion, MATCHHISTORY where champion.championID = matchhistory.championid group by champion.name order by Count desc Fetch first 3 rows only")
-
-
-as_tibble(df_postgres)
-
-df_postgres <- dbGetQuery(con, "SELECT * FROM SUMMONER")
+df_postgres <- dbGetQuery(con, "SELECT champion.name as Name, count(MATCHHISTORY.championID) as Count FROM champion, MATCHHISTORY where champion.championID = matchhistory.championid group by champion.name order by Count desc Fetch first 10 rows only")
 
 as_tibble(df_postgres)
 
@@ -46,7 +126,7 @@ dbDisconnect(con)
 
 ```{r}
 
-con <- connectDB("postgres","postgres")
+con <- connectDB(username, password)
 #RANK MODIFIER
 
 
@@ -75,7 +155,7 @@ dbDisconnect(con)
 ```
 
 ```{r}
-con <- connectDB("postgres","postgres")
+con <- connectDB(username, password)
 #Banned Champions with their banrates.
 
 df_postgres <- dbGetQuery(con, "SELECT champion.name as Name, 
@@ -99,7 +179,7 @@ dbDisconnect(con)
 
 ```{r}
 dbDisconnect(con)
-con <- connectDB("postgres","postgres")
+con <- connectDB(username, password)
 #Top 3 picked champions.
 
 df_postgres <- dbGetQuery(con, "SELECT S.TIER, S.RANK, AVG(S.TOTALGAMESPLAYED) FROM MATCHHISTORY MH, SUMMONER S WHERE MH.ACCOUNTID = S.ACCOUNTID GROUP BY S.TIER, S.RANK ORDER BY TIER ASC, RANK ASC")
@@ -110,7 +190,7 @@ as_tibble(df_postgres)
 
 ```{r}
 dbDisconnect(con)
-con <- connectDB("postgres","postgres")
+con <- connectDB(username, password)
 #Top 3 picked champions.
 
 df_postgres <- dbGetQuery(con, "SELECT S.TIER, S.RANK FROM MATCHHISTORY MH, SUMMONER S WHERE MH.ACCOUNTID = S.ACCOUNTID GROUP BY S.TIER, S.RANK ORDER BY TIER ASC, RANK ASC")
@@ -122,7 +202,7 @@ as_tibble(df_postgres)
 
 ```{r}
 dbDisconnect(con)
-con <- connectDB("postgres","postgres")
+con <- connectDB(username, password)
 #Chosen spells count.
 
 df_postgres <- dbGetQuery(con, "SELECT S.spellid as ID, s.name as name , 
@@ -146,7 +226,7 @@ as_tibble(df_postgres)
 
 TOP 10 most and least bought items.
 ```{r}
-con <- connectDB("postgres","postgres")
+con <- connectDB(username, password)
 #Top 10 most/least bought items.
 
 df_postgres <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name , 
@@ -176,7 +256,7 @@ dbDisconnect(con)
 RANK MODIFIER
 
 ```{r}
-con <- connectDB("postgres","postgres")
+con <- connectDB(username, password)
 #RANK MODIFIER
 
 
