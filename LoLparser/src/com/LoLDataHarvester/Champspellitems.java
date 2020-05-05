@@ -1,5 +1,6 @@
 package com.LoLDataHarvester;
 
+import com.LoLDataHarvester.StrategyPattern.Strategy;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -7,17 +8,32 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Iterator;
 
-public class champspellitems {
+public class Champspellitems implements Strategy {
 
-    private String patch;
-
-    public champspellitems(String patch) throws IOException {
-        this.patch = patch;
+    /**
+     * Deze functie heeft bij elke class een andere betekenis en zorgt ervoor
+     * dat de gewenste data wordt opgehaald via een url en wordt weggeschreven in een .CSV file.
+     * @param api_key De sleutel die nodig is om data van Riot op te halen.
+     * @param region Dit is de region waarvan we data ophalen.
+     * @param tiers Dit is een array van verschillende tiers waar doorheen geloopt kan worden.
+     * @param divisions Dit is een array van verschillende divisions waar doorheen geloopt kan worden.
+     * @throws IOException
+     */
+    @Override
+    public void getData(String api_key, String region, String[] tiers, String[] divisions) throws IOException {
+        getSpecificData("item");
+        getSpecificData("champion");
+        getSpecificData("summoner");
     }
 
+    /**
+     * Deze functie haalt data op detreffende Items, Spells of Champions
+     * @param categorie Deze parameter bepaalt welk van de drie soorten data hij ophaalt.
+     * @throws IOException
+     */
     private void getSpecificData(String categorie) throws  IOException{
+        String patch = "10.6.1";
         String filename;
         if(categorie.equals("summoner"))
             filename = "spell"; else
@@ -31,7 +47,7 @@ public class champspellitems {
         //creert de URL waarvan het JSONObject wordt opgehaald.
         String ulrChamps = "http://ddragon.leagueoflegends.com/cdn/" + patch + "/data/en_US/" + categorie + ".json";
         //het JSONObject wordt opgehaald.
-        JSONObject object = new JSONObject(parser.returnJsonStringFromUrl(ulrChamps,"")).getJSONObject("data");
+        JSONObject object = new JSONObject(Parser.returnJsonStringFromUrl(ulrChamps,"")).getJSONObject("data");
         //Maakt een array aan met daarin de sleutels van alle JSONObjecten in het hoofdobject.
         JSONArray keys = object.names();
 
@@ -52,9 +68,5 @@ public class champspellitems {
         fileWriter.close();
     }
 
-    public void getData() throws IOException {
-        getSpecificData("item");
-        getSpecificData("champion");
-        getSpecificData("summoner");
-    }
+
 }
