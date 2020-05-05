@@ -29,53 +29,101 @@ username <- "postgres"
 password <- "!RappaR1964"
 
 ```
-
+\pagebreak
 # Inleiding 
 In dit bestand gaan we de vragen beantwoord die in de plan van aanpak worden beschreven. Welke vragen willen we beantwoorden met deze database?
 
-1. What statistics do highest ranked players have in common?
+1. Which champion is banned the most in tournament/ brackets(ranks)? 
 
-2. Can we use these statistics to identify “smurf” in the lower ranks?
+2. Which champion has the highest win rate in tournament/ brackets(ranks)? 
 
-3. Which champion is banned the most in tournament/ brackets(ranks)?
+3. Does getting “First Blood” increase the odds of winning a match? 
 
-4. Which champion has the highest win rate in tournament/ brackets(ranks)?
+4. Is a high champion mastery (onetrick) relate to a high rank?
 
-5. Does getting “First Blood” increase the odds of winning a match?
+5. How long does an average game last per bracket? 
 
-6. Is a high champion mastery (onetrick) relate to a high rank?
+6. What is the average vision score per region? 
 
-7. Is there an increased rate in of certain champion picks when they are in free rotation? (may also be able to connect data with new “smurf” accounts)
+7. How long does an average game last per bracket? 
 
-8. What are the most recurring stats when it comes to wins?
+8. What is the most used summoner spell combo? 
+ 
+9. What is the least used summoner spell combo? 
 
-9. What region has the most successful players (highest rank)?
+10. What are the top 5 most bought items. 
 
-10. Does the average vision-score/map-awareness6 increase per bracket?
+11. What are the top 5 least bought items. 
 
-11. How long does an average game last per bracket?
 
-12. Does the average amount of deaths decrease per bracket?
+#Vragen & antwoorden
 
-13. What is the most used summoner spell combo?
+#Vraag 1: Which champion Which champion is banned the most in tournament/ brackets(ranks)?
 
-14. What is the least used summoner spell combo?
-
-15. What are the top 5 most bought items.
-
-16. What are the top 5 least bought items.
-
-*Voor meer informatie en uitleg van deze vragen, zie plan van aanpak.
-
-#Vraag 5: Does getting “First Blood” increase the odds of winning a match?
 ```{r}
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, "SELECT champion.name as Name, 
+                          count(bans.bannedchampion) as Count, 
+                          count(bans.bannedchampion) / 
+                          (SELECT count(bannedchampion)/1000 FROM bans) as banrate
+
+                          FROM champion, bans where champion.championID = bans.bannedchampion 
+                          GROUP BY champion.name 
+                          ORDER BY Count DESC 
+                          Fetch first 10 rows only")
+as_tibble(qResult)
+dbDisconnect(con)
+```
+
+#Conclusie vraag 1
+
+Zie bovenstaande tabel
+
+
+#Vraag 2: Which champion has the highest win rate? (Of the 10 most chosen games)
+
+```{r}
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, "SELECT C.name, COUNT(C.CHAMPIONID) AS WinCount,(SELECT COUNT(CHAMPIONID) FROM MATCHHISTORY X WHERE X.championID = c.championID) AS GamesPlayed FROM CHAMPION C, MATCHHISTORY M,TEAMDATA T, SUMMONER S WHERE C.championid = M.championid AND T.matchID = M.matchID AND S.accountID = M.accountID AND T.teamID = M.teamID AND T.Win = 'Win' GROUP BY c.CHAMPIONID ORDER By WinCount DESC FETCH FIRST 10 ROWS ONLY")
+dbDisconnect(con)
+```
+```{r}
+percentageYasuo <- qResult[1,2] / qResult[1,3] * 100
+percentageTresh <- qResult[2,2] / qResult[2,3] * 100
+percentageEzreal <- qResult[3,2] / qResult[3,3] * 100
+percentageMissFortune <- qResult[4,2] / qResult[4,3] * 100
+percentageLeeSin <- qResult[5,2] / qResult[5,3] * 100
+percentageEkko <- qResult[6,2] / qResult[6,3] * 100
+percentageJax <- qResult[7,2] / qResult[7,3] * 100
+percentageKatarina <- qResult[8,2] / qResult[8,3] * 100
+percentageKaiSa <- qResult[9,2] / qResult[9,3] * 100
+percentageVladimir <- qResult[10,2] / qResult[10,3] * 100
+
+winPercentage <- c(percentageYasuo,percentageTresh,percentageEzreal,percentageMissFortune,
+                   percentageLeeSin,percentageEkko,percentageJax,percentageKatarina,
+                   percentageKaiSa,percentageVladimir)
+
+qResult['winPercentage'] <- winPercentage
+
+as_tibble(qResult)
+```
+
+# Conclusie vraag 2
+
+We zien dat er minimale verschillen zijn. Echter zijn we tot de conclusie gekomen dat deze vraag niet geheel het hele beeld laat zien. De gamesplayed zijn bijvoorbeeld minimaal en speler afhankelijk. Om deze vraag wel goed te kunnen beantwoorden zouden we meer data moeten binnenhalen.
+
+#Vraag 3: Does getting “First Blood” increase the odds of winning a match?
+
+```{r}
+# Get the data
 con <- connectDB(username,password)
 qResult <- dbGetQuery(con,"SELECT COUNT(T.matchteamid) as aantal, T.WIN, T.firstbloodteam FROM teamdata T GROUP BY T.WIN,T.firstbloodteam")
 dbDisconnect(con)
 ```
-
 ```{r}
-qResultTotal <- qResult[1,1] + qResult[2,1] + qResult[3,1] + qResult[4,1]
+qResultTotal <-  qResult[2,1] + qResult[3,1]
 
 #Percentages berekenen 
 pWT <- (qResult[3,1] / qResultTotal) * 100 # Win and FirstBlood
@@ -102,134 +150,187 @@ cat(" % \n")
 printP()
 
 ```
-#Conclusie vraag 5
+
+#Conclusie vraag 3
 
 We zien in de geplotte data, een minimaal verschil in de percentages van Wins met en zonder FirstBlood
-het verschil is dan ook 8%. Dit betekend niet dat er letterlijk 8% meer kans is op winst bij het behalen van firstBlood. Het zegt enkel dat bij de gewonnen matches er 8% vaker is gewonnen met FirstBlood dan zonder.
+het verschil is dan ook 16%. Dit betekend niet dat er letterlijk 16% meer kans is op winst bij het behalen van firstBlood. Het zegt enkel dat bij de gewonnen matches er 16% vaker is gewonnen met FirstBlood dan zonder.
 
-
-
-#Vraag 
-```{r}
-
-con <- connectDB(username, password)
-#Top 10 picked champions.
-
-df_postgres <- dbGetQuery(con, "SELECT champion.name as Name, count(MATCHHISTORY.championID) as Count FROM champion, MATCHHISTORY where champion.championID = matchhistory.championid group by champion.name order by Count desc Fetch first 10 rows only")
-
-as_tibble(df_postgres)
-
-dbDisconnect(con)
-
-```
-
+#Vraag 4 : Is a high champion mastery (onetrick) relate to a high rank?
 
 ```{r}
-
-con <- connectDB(username, password)
-#RANK MODIFIER
-
-
-df_postgres <- dbGetQuery(con, 'SELECT tier, CONCAT(CASE tier
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, 'SELECT CASE S.tier
                           WHEN cast(\'"DIAMOND"\' as varchar) THEN 1
                           WHEN cast(\'"PLATINUM"\' as varchar) THEN 2
                           WHEN cast(\'"GOLD"\' as varchar) THEN 3
                           WHEN cast(\'"SILVER"\' as varchar) THEN 4
                           WHEN cast(\'"BRONZE"\' as varchar) THEN 5
                           WHEN cast(\'"IRON"\' as varchar) THEN 6
-                          ELSE 0
-                          END , CASE rank
-                          WHEN cast(\'"I"\' as varchar) THEN 1
-                          WHEN cast(\'"II"\' as varchar) THEN 2
-                          WHEN cast(\'"III"\' as varchar) THEN 3
-                          WHEN cast(\'"IV"\' as varchar) THEN 4
-                          ELSE 0
-                          END)
-                          AS RANK
-                          FROM SUMMONER')
-
-
-as_tibble(df_postgres)
+                          ELSE 0 END AS RANK,
+                                (SELECT CHAMPIONPOINTS
+                                FROM CHAMPIONMASTERY
+                                WHERE S.SUMMONERID = CHAMPIONMASTERY.ACCOUNTID
+                                FETCH FIRST ROW ONLY) AS ONETRICKPOINTS
+                          FROM SUMMONER S
+                          ')
 
 dbDisconnect(con)
 ```
+```{r}
+plot(qResult$rank,qResult$onetrickpoints)
+lrm <- lm(data=qResult)
+summary(lrm)
+abline(lrm,col='red')
+```
+
+#Conclusie vraag 4
+
+In de bovenstaande tabel is rank 1 het hoogste en rank 6 de laagste. De fit van dit model, die word aangegevens door de rode lijn, is recht. Dit betekend dat er niet een linear verband is tussen de rank en de hoeveelheid onetrickpoints. We zien wel in de grafiek dat de spelers met het hoogste aantal onetrick points, per rank ook omhoog gaan. Wat is te verklaren omdat, wanneer een speler langer speelt, automatisch in een hogere rank komt en dus ook meer tijd heeft gehad om deze points te verzamelen. In de laagste rank zitten spelers die wellicht enkel speeltijd met 1 champion hebben gehad en daardoor veel onetrickpoints hebben. 
+
+#Vraag 5: How long does an average game last per bracket?
 
 ```{r}
-con <- connectDB(username, password)
-#Banned Champions with their banrates.
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, "SELECT S.Tier AS TIER, 
+                                AVG(T.matchduration) AS AverageDurationMins
+                                FROM Summoner S, TEAMDATA T, MATCHHISTORY M
+                                WHERE M.accountid = S.accountid AND M.matchid = T.matchID
+                                GROUP BY S.Tier
+                                ")
 
-df_postgres <- dbGetQuery(con, "SELECT champion.name as Name, 
-                          count(bans.bannedchampion) as Count, 
-                          count(bans.bannedchampion) / 
-                          (SELECT count(bannedchampion)/1000 FROM bans) as banrate
+#Sort data by tier highest to lowest
+tiers <- c(qResult[4,1],qResult[3,1],qResult[1,1],qResult[2,1],qResult[5,1])
+tiersData <- c(qResult[4,2],qResult[3,2],qResult[1,2],qResult[2,2],qResult[5,2])
+averageGame <- data.frame(tiers,tiersData)
+
+dbDisconnect(con)
+
+as_tibble(averageGame)
+```
+#Conclusie vraag 5
+Zie bovenstaande tabel. We zien hier dat hoe hoger het niveau dat gemiddeld de duratie van een potje daald. 
+
+
+#Vraag 6: What is the average vision score per region? 
+```{r}
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, 'SELECT CASE S.tier
+                          WHEN cast(\'"DIAMOND"\' as varchar) THEN 1
+                          WHEN cast(\'"PLATINUM"\' as varchar) THEN 2
+                          WHEN cast(\'"GOLD"\' as varchar) THEN 3
+                          WHEN cast(\'"SILVER"\' as varchar) THEN 4
+                          WHEN cast(\'"BRONZE"\' as varchar) THEN 5
+                          WHEN cast(\'"IRON"\' as varchar) THEN 6
+                          ELSE 0 END AS RANK,
+                                (SELECT SUM(playerkills)+SUM(playerassists)
+                                FROM matchhistory
+                                WHERE S.accountid = matchhistory.ACCOUNTID
+                                FETCH FIRST ROW ONLY) AS KILLS
+                          FROM SUMMONER S
+                          ')
+dbDisconnect(con)
+``` 
+```{r}
+plot(qResult$rank,qResult$kills)
+lrm <- lm(data=qResult)
+summary(lrm)
+abline(lrm,col='red')
+``` 
+
+#Conclusie vraag 6
+
+Ook hier zien we geen direct verband. 
+
+
+#Vraag 7: How long does an average game last per bracket?
+
+```{r}
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, 'SELECT S.TIER AS TIER, AVG(T.matchduration) AS AVGMatchDurationMins FROM MATCHHISTORY M, SUMMONER S, TEAMDATA T WHERE S.ACCOUNTID = M.ACCOUNTID AND M.matchid = T.matchID GROUP BY S.TIER ORDER BY S.TIER ASC')
+as_tibble(qResult)
+
+#Sort data by tier highest to lowest
+tiers <- c(qResult[2,1],qResult[4,1],qResult[5,1],qResult[3,1],qResult[1,1])
+tiersData <- c(qResult[2,2],qResult[4,2],qResult[5,2],qResult[3,2],qResult[1,2])
+matchduration <- data.frame(tiers,tiersData)
+
+as_tibble(matchduration)
+``` 
+
+#Conclusie vraag 7
+
+We zien hier dat in de hogere tiers de potjes gemiddeld net iets minder lang duren dan bij de lagere ranks.
+
+
+#Vraag 8: What is the most used summoner spell combo?
+
+```{r}
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, 'SELECT CASE
+                          WHEN M.spell1 < M.spell2 THEN concat((SELECT NAME FROM SPELL WHERE SPELLID = M.spell1),                                                                    (SELECT NAME FROM SPELL WHERE SPELLID = M.spell2))
+                          ELSE concat((SELECT NAME FROM SPELL WHERE SPELLID = M.spell2),                                                                      (SELECT NAME FROM SPELL WHERE SPELLID = M.spell1))
+                          END as spellcombo,
+
+                          COUNT(CASE
+                          WHEN M.spell1 < M.spell2 THEN concat(M.spell1,M.spell2)
+                          ELSE CONCAT(m.spell2,m.spell1)
+                          END) AS AANTAL
                           
-                          FROM champion, bans where champion.championID = bans.bannedchampion 
-                          GROUP BY champion.name 
-                          ORDER BY Count DESC 
-                          Fetch first 10 rows only")
-
-as_tibble(df_postgres)
-
-df_postgres <- dbGetQuery(con, "SELECT count(bans.bannedchampion) as Count FROM bans")
-
-as_tibble(df_postgres)
-
-dbDisconnect(con)
+                          FROM MATCHHISTORY M
+                          
+                          GROUP BY spellcombo
+                          ORDER BY aantal desc
+                          FETCH FIRST 5 Rows only
+                          ')
+as_tibble(qResult)
 ```
+
+#Conclusie vraag 8
+
+Zie bovenstaande tabel
+
+
+#Vraag 9:What is the least used summoner spell combo?
 
 ```{r}
-dbDisconnect(con)
-con <- connectDB(username, password)
-#Top 3 picked champions.
+# Get the data
+con <- connectDB(username,password)
+qResult <- dbGetQuery(con, 'SELECT CASE
+                          WHEN M.spell1 < M.spell2 THEN concat((SELECT NAME FROM SPELL WHERE SPELLID = M.spell1),                                                                     (SELECT NAME FROM SPELL WHERE SPELLID = M.spell2))
+                          ELSE concat((SELECT NAME FROM SPELL WHERE SPELLID = M.spell2),                                                                      (SELECT NAME FROM SPELL WHERE SPELLID = M.spell1))
+                          END as spellcombo,
 
-df_postgres <- dbGetQuery(con, "SELECT S.TIER, S.RANK, AVG(S.TOTALGAMESPLAYED) FROM MATCHHISTORY MH, SUMMONER S WHERE MH.ACCOUNTID = S.ACCOUNTID GROUP BY S.TIER, S.RANK ORDER BY TIER ASC, RANK ASC")
-
-
-as_tibble(df_postgres)
+                          COUNT(CASE
+                          WHEN M.spell1 < M.spell2 THEN concat(M.spell1,M.spell2)
+                          ELSE CONCAT(m.spell2,m.spell1)
+                          END) AS aantal
+                          
+                          FROM MATCHHISTORY M
+                          
+                          GROUP BY spellcombo
+                          ORDER BY aantal ASC
+                          FETCH FIRST 5 Rows only
+                          ')
+as_tibble(qResult)
 ```
 
-```{r}
-dbDisconnect(con)
-con <- connectDB(username, password)
-#Top 3 picked champions.
+#Conclusie vraag 9
 
-df_postgres <- dbGetQuery(con, "SELECT S.TIER, S.RANK FROM MATCHHISTORY MH, SUMMONER S WHERE MH.ACCOUNTID = S.ACCOUNTID GROUP BY S.TIER, S.RANK ORDER BY TIER ASC, RANK ASC")
+Zie bovenstaande tabel
 
+#Vraag 10 & 11: What are the top 10 most and least bought items in game?
 
-as_tibble(df_postgres)
-```
-
-
-```{r}
-dbDisconnect(con)
-con <- connectDB(username, password)
-#Chosen spells count.
-
-df_postgres <- dbGetQuery(con, "SELECT S.spellid as ID, s.name as name , 
-                          (SELECT COUNT(SPELL1) FROM MATCHHISTORY WHERE S.spellid = SPELL1 
-                          FETCH FIRST ROW ONLY) +
-                          (SELECT COUNT(SPELL2) FROM MATCHHISTORY WHERE S.spellid = SPELL2 
-                          FETCH FIRST ROW ONLY) as Count,
-                          ((SELECT COUNT(SPELL1) FROM MATCHHISTORY WHERE S.spellid = SPELL1 
-                          FETCH FIRST ROW ONLY) +
-                          (SELECT COUNT(SPELL2) FROM MATCHHISTORY WHERE S.spellid = SPELL2 
-                          FETCH FIRST ROW ONLY))/
-                          (SELECT (COUNT(SPELL1)+COUNT(SPELL2))/200 FROM MATCHHISTORY) as totalspells
-                          FROM SPELL S ORDER BY count DESC")
-
-as_tibble(df_postgres)
-
-df_postgres <- dbGetQuery(con, "SELECT * FROM matchhistory")
-
-as_tibble(df_postgres)
-```
-
-TOP 10 most and least bought items.
 ```{r}
 con <- connectDB(username, password)
 #Top 10 most/least bought items.
 
-df_postgres <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name , 
+mostBought <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name , 
                           (SELECT COUNT(ITEM0) FROM MATCHHISTORY WHERE I.ITEMID = ITEM0 FETCH FIRST ROW ONLY)+
                           (SELECT COUNT(ITEM1) FROM MATCHHISTORY WHERE I.ITEMID = ITEM1 FETCH FIRST ROW ONLY)+
                           (SELECT COUNT(ITEM2) FROM MATCHHISTORY WHERE I.ITEMID = ITEM2 FETCH FIRST ROW ONLY)+
@@ -238,48 +339,28 @@ df_postgres <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name ,
                           (SELECT COUNT(ITEM5) FROM MATCHHISTORY WHERE I.ITEMID = ITEM5 FETCH FIRST ROW ONLY)                            as Count 
                           FROM ITEM I ORDER BY count DESC FETCH FIRST 10 ROWS ONLY")
 
-as_tibble(df_postgres)
 
-df_postgres <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name , 
+leastBought <- dbGetQuery(con, "SELECT I.ITEMID as ID, I.name as name , 
                           (SELECT COUNT(ITEM0) FROM MATCHHISTORY WHERE I.ITEMID = ITEM0 FETCH FIRST ROW ONLY)+
                           (SELECT COUNT(ITEM1) FROM MATCHHISTORY WHERE I.ITEMID = ITEM1 FETCH FIRST ROW ONLY)+
                           (SELECT COUNT(ITEM2) FROM MATCHHISTORY WHERE I.ITEMID = ITEM2 FETCH FIRST ROW ONLY)+
                           (SELECT COUNT(ITEM3) FROM MATCHHISTORY WHERE I.ITEMID = ITEM3 FETCH FIRST ROW ONLY)+
                           (SELECT COUNT(ITEM4) FROM MATCHHISTORY WHERE I.ITEMID = ITEM4 FETCH FIRST ROW ONLY)+
                           (SELECT COUNT(ITEM5) FROM MATCHHISTORY WHERE I.ITEMID = ITEM5 FETCH FIRST ROW ONLY)                            as count 
-                          FROM ITEM I ORDER BY count ASC FETCH FIRST 10 ROWS ONLY")
-
-as_tibble(df_postgres)
+                          FROM ITEM I 
+                          WHERE ((SELECT COUNT(ITEM0) FROM MATCHHISTORY WHERE I.ITEMID = ITEM0 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM1) FROM MATCHHISTORY WHERE I.ITEMID = ITEM1 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM2) FROM MATCHHISTORY WHERE I.ITEMID = ITEM2 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM3) FROM MATCHHISTORY WHERE I.ITEMID = ITEM3 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM4) FROM MATCHHISTORY WHERE I.ITEMID = ITEM4 FETCH FIRST ROW ONLY)+
+                          (SELECT COUNT(ITEM5) FROM MATCHHISTORY WHERE I.ITEMID = ITEM5 FETCH FIRST ROW ONLY)) > 0
+                          ORDER BY count ASC FETCH FIRST 10 ROWS ONLY")
 dbDisconnect(con)
+
+as_tibble(mostBought)
+as_tibble(leastBought)
 ```
 
-RANK MODIFIER
+# Conclusie vraag 10 & 11 
 
-```{r}
-con <- connectDB(username, password)
-#RANK MODIFIER
-
-
-df_postgres <- dbGetQuery(con, 'SELECT tier, CONCAT(CASE tier
-                          WHEN cast(\'"DIAMOND"\' as varchar) THEN 1
-                          WHEN cast(\'"PLATINUM"\' as varchar) THEN 2
-                          WHEN cast(\'"GOLD"\' as varchar) THEN 3
-                          WHEN cast(\'"SILVER"\' as varchar) THEN 4
-                          WHEN cast(\'"BRONZE"\' as varchar) THEN 5
-                          WHEN cast(\'"IRON"\' as varchar) THEN 6
-                          ELSE 0
-                          END , CASE rank
-                          WHEN cast(\'"I"\' as varchar) THEN 1
-                          WHEN cast(\'"II"\' as varchar) THEN 2
-                          WHEN cast(\'"III"\' as varchar) THEN 3
-                          WHEN cast(\'"IV"\' as varchar) THEN 4
-                          ELSE 0
-                          END)
-                          AS RANK
-                          FROM SUMMONER')
-
-
-as_tibble(df_postgres)
-
-dbDisconnect(con)
-```
+Zie bovenstaande tabel.
