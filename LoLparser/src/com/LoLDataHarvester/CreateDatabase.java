@@ -2,15 +2,13 @@ package com.LoLDataHarvester;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 
-public class createDatabase {
+public class CreateDatabase {
 
-    private databaseConnection dbConn;
+    private DatabaseConnection dbConn;
 
-    public createDatabase(String user, String password, String databaseName , int port, String ipAdress){
-        this.dbConn = new databaseConnection(user, password, databaseName, port, ipAdress);
+    public CreateDatabase(String user, String password, String databaseName , int port, String ipAdress){
+        this.dbConn = new DatabaseConnection(user, password, databaseName, port, ipAdress);
 
         dropAllTables();
 
@@ -30,7 +28,7 @@ public class createDatabase {
         }
     }
 
-    public databaseConnection getDbConn() {
+    public DatabaseConnection getDbConn() {
         return dbConn;
     }
 

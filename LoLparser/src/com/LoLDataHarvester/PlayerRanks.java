@@ -1,22 +1,23 @@
 package com.LoLDataHarvester;
 
+import com.LoLDataHarvester.StrategyPattern.Strategy;
+
 import java.io.IOException;
 
-public class leagueV4EntriesQueTierDivision {
+public class PlayerRanks implements Strategy {
 
-    private String[] divisions, tiers;
-    private String apiKey, region;
-    private  String[] pages = {"1"};
-
-
-    public leagueV4EntriesQueTierDivision(String[] division, String[] tier, String apiKey, String region) throws IOException {
-        this.divisions = division;
-        this.tiers = tier;
-        this.apiKey = apiKey;
-        this.region = region;
-    }
-
-    public void getData() throws IOException {
+    /**
+     * Deze functie heeft bij elke class een andere betekenis en zorgt ervoor
+     * dat de gewenste data wordt opgehaald via een url en wordt weggeschreven in een .CSV file.
+     * @param api_key De sleutel die nodig is om data van Riot op te halen.
+     * @param region Dit is de region waarvan we data ophalen.
+     * @param tiers Dit is een array van verschillende tiers waar doorheen geloopt kan worden.
+     * @param divisions Dit is een array van verschillende divisions waar doorheen geloopt kan worden.
+     * @throws IOException
+     */
+    @Override
+    public void getData(String api_key, String region, String[] tiers, String[] divisions) throws IOException {
+        String[] pages = {"1"};
         String outputFile = "LoLparser/CSVs/AllPlayers.csv";
         String placeHolder = "";
         int countTotal = (tiers.length * divisions.length * pages.length);
@@ -28,10 +29,10 @@ public class leagueV4EntriesQueTierDivision {
                     int maxTries = 5;
                     while(tryCount < maxTries){
                         try{
-                            parser.sleep(1500);
+                            Parser.sleep(1500);
                             String urlWhole = "https://" + region + ".api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/" + tier + "/" +
-                                    division + "?page=" + page + "&api_key=" + apiKey;
-                            String jsonString = parser.returnJsonStringFromUrl(urlWhole, "");
+                                    division + "?page=" + page + "&api_key=" + api_key;
+                            String jsonString = Parser.returnJsonStringFromUrl(urlWhole, "");
                             if (placeHolder == "") {
                                 placeHolder = jsonString.substring(0, jsonString.length() - 1);
                             } else {
@@ -39,7 +40,7 @@ public class leagueV4EntriesQueTierDivision {
                             }
                             tryCount = maxTries;
                         }catch (Exception e){
-                            parser.sleep(2000);
+                            Parser.sleep(2000);
                             tryCount++;
                             if(tryCount == maxTries) System.out.println(e.toString());
                         }
@@ -52,7 +53,7 @@ public class leagueV4EntriesQueTierDivision {
 
         if(placeHolder != ""){
             placeHolder = placeHolder +"]";
-            parser.generateCSVFromJString(placeHolder,outputFile);
+            Parser.generateCSVFromJString(placeHolder,outputFile);
         }else{
             System.out.println("Failed to retrieve player data from brackets!");
         }

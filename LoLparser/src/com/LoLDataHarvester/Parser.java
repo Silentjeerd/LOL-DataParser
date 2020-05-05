@@ -20,14 +20,14 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Map;
 
-public class parser {
+public class Parser {
     static private String inputfile;
 
     //TODO Tjeerd please comment !!
 
     /**
-     *
-     * @param millis
+     * Deze functie wordt aangeroepen zodra we de parser willen laten wachten.
+     * @param millis Het aantal milliseconden dat gewacht moet worden.
      */
     static void sleep(long millis){
         try {
@@ -38,9 +38,9 @@ public class parser {
     }
 
     /**
-     *
-     * @param rd
-     * @return
+     * Deze functie zet alle tekst uit de Reader om naar één String
+     * @param rd BufferedReader die moet worden omgezet.
+     * @return De String waarmee verder moet worden gewerkt.
      * @throws IOException
      */
     static private String readAll(Reader rd) throws IOException{
@@ -52,33 +52,12 @@ public class parser {
         return sb.toString();
     }
 
-    /**
-     *
-     * @param url
-     * @throws IOException
-     * @throws JSONException
-     */
-    static private void readJsonFromUrl(String url) throws IOException, JSONException{
-        InputStream is = new URL(url).openStream();
-
-        inputfile  = "LoLparser/CSVs/test.json";
-
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is,Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            File jsonFile = new File(inputfile);
-            FileUtils.writeStringToFile(jsonFile,jsonText);
-
-        } finally  {
-            is.close();
-        }
-    }
 
     /**
-     *
-     * @param url
-     * @param subarray
-     * @return
+     * Deze functie haalt een String op op basis van een URL en eventueel een subarray.
+     * @param url het URL voor een HTTP request wat gedaan moet worden.
+     * @param subarray een String waar direct een subarray vanuit de JSON kan worden gehaald.
+     * @return Een String variant van de gevraagde data.
      * @throws IOException
      * @throws JSONException
      */
@@ -107,9 +86,9 @@ public class parser {
     }
 
     /**
-     *
-     * @param inputString
-     * @param outputFile
+     * Deze functie zet een String van een JSONObject of JSONArray om naar een .CSV bestand.
+     * @param inputString De String van data die weg moet worden geschreven.
+     * @param outputFile De String van het pad naar het bestand waar de data in moet worden weggeschreven.
      * @throws IOException
      */
     static public void generateCSVFromJString(String inputString, String outputFile) throws IOException{
@@ -120,24 +99,9 @@ public class parser {
     }
 
     /**
-     *
-     * @param url
-     * @param outputFile
-     * @throws IOException
-     */
-    static public void generateCSV(String url,String outputFile) throws IOException{
-
-        readJsonFromUrl(url);
-        String str = new String(Files.readAllBytes(Paths.get(inputfile)));
-        JFlat flatMe = new JFlat(str);
-        List<Object[]> json2csv = flatMe.json2Sheet().getJsonAsSheet();
-        flatMe.write2csv(outputFile);
-    }
-
-    /**
-     *
-     * @param url
-     * @return
+     * Deze functie haalt het AccountID en Summonerlevel van individuen op.
+     * @param url het URL voor een HTTP request wat gedaan moet worden.
+     * @return Een String met daarin de vraagde data.
      * @throws IOException
      */
     static public String getAccountID(String url) throws IOException{
@@ -151,9 +115,10 @@ public class parser {
     }
 
     /**
-     *
-     * @param filename
-     * @return
+     * Deze functie telt het aantal regels in een .CSV bestand.
+     * @param filename De String van het pad van het .CSV bestand dat moet worden gelezen.
+     * @return De count van het aantal regels. Deze wordt gebruikt om in de console
+     *         weer te geven wat de stand van zaken is.
      * @throws IOException
      */
     static public int countLines(String filename) throws IOException {

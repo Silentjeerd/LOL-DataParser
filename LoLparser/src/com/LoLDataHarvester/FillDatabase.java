@@ -2,18 +2,16 @@ package com.LoLDataHarvester;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.sql.PreparedStatement;
-import java.util.concurrent.ExecutionException;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
 
-public class fillDatabase {
+public class FillDatabase {
 
-    private databaseConnection dbConn;
+    private DatabaseConnection dbConn;
 
-    public fillDatabase(databaseConnection dbConn){
+    public FillDatabase(DatabaseConnection dbConn){
         this.dbConn = dbConn;
     }
 

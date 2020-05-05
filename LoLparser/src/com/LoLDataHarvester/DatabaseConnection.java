@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-public class databaseConnection {
+public class DatabaseConnection {
     private Connection conn;
 
     private String user;
@@ -13,7 +13,7 @@ public class databaseConnection {
     private int port;
     private String ipAdress;
 
-    public databaseConnection(String user, String password, String databaseName , int port, String ipAdress) {
+    public DatabaseConnection(String user, String password, String databaseName , int port, String ipAdress) {
         this.user = user;
         this.password = password;
         this.databaseName = databaseName;
